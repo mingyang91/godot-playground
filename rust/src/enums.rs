@@ -115,6 +115,17 @@ impl From<WeaponBits> for WeaponType {
     }
 }
 
+impl From<WeaponType> for WeaponBits {
+    fn from(weapon: WeaponType) -> Self {
+        match weapon {
+            WeaponType::SimpleMelee => WeaponBits::SIMPLE_MELEE,
+            WeaponType::SimpleRanged => WeaponBits::SIMPLE_RANGED,
+            WeaponType::MartialMelee => WeaponBits::MARTIAL_MELEE,
+            WeaponType::MartialRanged => WeaponBits::MARTIAL_RANGED,
+        }
+    }
+}
+
 pub enum ShieldType {
     Buckler,
     Heater,
@@ -140,6 +151,17 @@ impl From<ShieldBits> for ShieldType {
             ShieldBits::KITE => ShieldType::Kite,
             ShieldBits::TOWER => ShieldType::Tower,
             _ => unreachable!("Invalid shield bits"),
+        }
+    }
+}
+
+impl From<ShieldType> for ShieldBits {
+    fn from(value: ShieldType) -> Self {
+        match value {
+            ShieldType::Buckler => ShieldBits::BUCKLER,
+            ShieldType::Heater => ShieldBits::HEATER,
+            ShieldType::Kite => ShieldBits::KITE,
+            ShieldType::Tower => ShieldBits::TOWER,
         }
     }
 }
@@ -215,6 +237,31 @@ impl From<SkillBits> for SkillType {
     }
 }
 
+impl From<SkillType> for SkillBits {
+    fn from(value: SkillType) -> Self {
+        match value {
+            SkillType::Acrobatics => SkillBits::ACROBATICS,
+            SkillType::AnimalHandling => SkillBits::ANIMAL_HANDLING,
+            SkillType::Arcana => SkillBits::ARCANA,
+            SkillType::Athletics => SkillBits::ATHLETICS,
+            SkillType::Deception => SkillBits::DECEPTION,
+            SkillType::History => SkillBits::HISTORY,
+            SkillType::Insight => SkillBits::INSIGHT,
+            SkillType::Intimidation => SkillBits::INTIMIDATION,
+            SkillType::Investigation => SkillBits::INVESTIGATION,
+            SkillType::Medicine => SkillBits::MEDICINE,
+            SkillType::Nature => SkillBits::NATURE,
+            SkillType::Perception => SkillBits::PERCEPTION,
+            SkillType::Performance => SkillBits::PERFORMANCE,
+            SkillType::Persuasion => SkillBits::PERSUASION,
+            SkillType::Religion => SkillBits::RELIGION,
+            SkillType::SleightOfHand => SkillBits::SLEIGHT_OF_HAND,
+            SkillType::Stealth => SkillBits::STEALTH,
+            SkillType::Survival => SkillBits::SURVIVAL,
+        }
+    }
+}
+
 
 pub enum ClassType {
     Barbarian,
@@ -265,6 +312,25 @@ impl From<ClassBits> for ClassType {
             ClassBits::WARLOCK => ClassType::Warlock,
             ClassBits::WIZARD => ClassType::Wizard,
             _ => unreachable!("Invalid class bits"),
+        }
+    }
+}
+
+impl From<ClassType> for ClassBits {
+    fn from(value: ClassType) -> Self {
+        match value {
+            ClassType::Barbarian => ClassBits::BARBARIAN,
+            ClassType::Bard => ClassBits::BARD,
+            ClassType::Cleric => ClassBits::CLERIC,
+            ClassType::Druid => ClassBits::DRUID,
+            ClassType::Fighter => ClassBits::FIGHTER,
+            ClassType::Monk => ClassBits::MONK,
+            ClassType::Paladin => ClassBits::PALADIN,
+            ClassType::Ranger => ClassBits::RANGER,
+            ClassType::Rogue => ClassBits::ROGUE,
+            ClassType::Sorcerer => ClassBits::SORCERER,
+            ClassType::Warlock => ClassBits::WARLOCK,
+            ClassType::Wizard => ClassBits::WIZARD,
         }
     }
 }
@@ -340,6 +406,56 @@ bitflags! {
 impl Proficiencies {
     pub fn new() -> Self {
         Proficiencies::empty()
+    }
+
+    #[inline]
+    pub fn from_proficiencies(proficiencies: Vec<Proficiency>) -> Self {
+        let mut p = Proficiencies::empty();
+        for proficiency in proficiencies {
+            p.add_proficiency(proficiency);
+        }
+        p
+    }
+
+    #[inline]
+    pub fn add_proficiency(&mut self, proficiency: Proficiency) {
+        match proficiency {
+            Proficiency::Armor(armor) => self.add_armor(armor),
+            Proficiency::Weapon(weapon) => self.add_weapon(weapon),
+            Proficiency::Shield(shield) => self.add_shield(shield),
+            Proficiency::SavingThrows(ability) => self.add_saving_throw(ability),
+            Proficiency::Skill(skill) => self.add_skill(skill),
+        }
+    }
+
+    #[inline]
+    pub fn add_armor(&mut self, armor: ArmorType) {
+        let ab = ArmorBits::from(armor);
+        self.insert(Proficiencies::from_bits_truncate((ab.bits() as ps) << ARMOR_START));
+    }
+
+    #[inline]
+    pub fn add_weapon(&mut self, weapon: WeaponType) {
+        let wb = WeaponBits::from(weapon);
+        self.insert(Proficiencies::from_bits_truncate((wb.bits() as ps) << WEAPON_START));
+    }
+
+    #[inline]
+    pub fn add_shield(&mut self, shield: ShieldType) {
+        let sb = ShieldBits::from(shield);
+        self.insert(Proficiencies::from_bits_truncate((sb.bits() as ps) << SHIELD_START));
+    }
+
+    #[inline]
+    pub fn add_saving_throw(&mut self, ability: AbilityType) {
+        let ab = AbilityBits::from(ability);
+        self.insert(Proficiencies::from_bits_truncate((ab.bits() as ps) << SAVING_THROW_START));
+    }
+
+    #[inline]
+    pub fn add_skill(&mut self, skill: SkillType) {
+        let sb = SkillBits::from(skill);
+        self.insert(Proficiencies::from_bits_truncate((sb.bits() as ps) << SKILL_START));
     }
 
     #[inline]
