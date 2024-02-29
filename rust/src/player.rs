@@ -1,4 +1,4 @@
-use std::cell::{OnceCell};
+use std::cell::OnceCell;
 use std::f32::consts::PI;
 use std::rc::Rc;
 use godot::engine::{AnimatedSprite2D, Area2D, CollisionShape2D, IArea2D, PhysicsBody2D};

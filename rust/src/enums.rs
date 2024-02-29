@@ -262,6 +262,65 @@ impl From<SkillType> for SkillBits {
     }
 }
 
+pub enum RaceType {
+    Dwarf,
+    Elf,
+    Halfling,
+    Human,
+    Dragonborn,
+    Gnome,
+    HalfElf,
+    HalfOrc,
+    Tiefling,
+}
+
+bitflags! {
+    #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
+    pub struct RaceBits: u16 {
+        const DWARF = 0b0000000000000001;
+        const ELF = 0b0000000000000010;
+        const HALFLING = 0b0000000000000100;
+        const HUMAN = 0b0000000000001000;
+        const DRAGONBORN = 0b0000000000010000;
+        const GNOME = 0b0000000000100000;
+        const HALF_ELF = 0b0000000001000000;
+        const HALF_ORC = 0b0000000010000000;
+        const TIEFLING = 0b0000000100000000;
+    }
+}
+
+impl From<RaceBits> for RaceType {
+    fn from(value: RaceBits) -> Self {
+        match value {
+            RaceBits::DWARF => RaceType::Dwarf,
+            RaceBits::ELF => RaceType::Elf,
+            RaceBits::HALFLING => RaceType::Halfling,
+            RaceBits::HUMAN => RaceType::Human,
+            RaceBits::DRAGONBORN => RaceType::Dragonborn,
+            RaceBits::GNOME => RaceType::Gnome,
+            RaceBits::HALF_ELF => RaceType::HalfElf,
+            RaceBits::HALF_ORC => RaceType::HalfOrc,
+            RaceBits::TIEFLING => RaceType::Tiefling,
+            _ => unreachable!("Invalid race bits"),
+        }
+    }
+}
+
+impl From<RaceType> for RaceBits {
+    fn from(value: RaceType) -> Self {
+        match value {
+            RaceType::Dwarf => RaceBits::DWARF,
+            RaceType::Elf => RaceBits::ELF,
+            RaceType::Halfling => RaceBits::HALFLING,
+            RaceType::Human => RaceBits::HUMAN,
+            RaceType::Dragonborn => RaceBits::DRAGONBORN,
+            RaceType::Gnome => RaceBits::GNOME,
+            RaceType::HalfElf => RaceBits::HALF_ELF,
+            RaceType::HalfOrc => RaceBits::HALF_ORC,
+            RaceType::Tiefling => RaceBits::TIEFLING,
+        }
+    }
+}
 
 pub enum ClassType {
     Barbarian,

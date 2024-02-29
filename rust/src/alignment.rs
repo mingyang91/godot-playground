@@ -45,3 +45,9 @@ impl Display for Alignment {
         write!(f, "{:?} {:?}", self.moral, self.ethical)
     }
 }
+
+impl Alignment {
+    pub fn new(moral: Moral, ethical: Ethical) -> Self {
+        Alignment { moral, ethical }
+    }
+}
