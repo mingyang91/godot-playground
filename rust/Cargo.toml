@@ -21,5 +21,10 @@ object-pool = "0.5.4"
 git = "https://github.com/godot-rust/gdext.git"
 features = ["experimental-threads"]
 
+[target.'cfg(target_arch = "wasm32")'.dependencies.godot]
+git = "https://github.com/godot-rust/gdext.git"
+default-features = false
+features = ["experimental-wasm"]
+
 [dependencies.godot-ffi]
 git = "https://github.com/godot-rust/gdext.git"

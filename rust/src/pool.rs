@@ -67,7 +67,7 @@ impl <R: ReuseObject> GdPool<R> {
         GdPool {
             capacity,
             pool: Rc::new(Pool::new(
-                capacity * 2,
+                capacity + 2,
                 || {
                     let mut obj = init.call(());
                     ReuseObject::init(&mut obj);

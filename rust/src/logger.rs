@@ -45,7 +45,20 @@ pub fn init() -> Result<(), SetLoggerError> {
     init_with_level(Level::Info)
 }
 
+
+#[cfg(target_os = "emscripten")]
+#[inline]
+pub fn init_tracing() {
+    tracing_subscriber::fmt().init();
+}
+
+#[cfg(target_os = "emscripten")]
+#[inline]
+pub fn deinit_tracing() { }
+
+#[cfg(not(target_os = "emscripten"))]
 static FILE_GUARD: Mutex<Option<WorkerGuard>> = Mutex::new(None);
+#[cfg(not(target_os = "emscripten"))]
 #[inline]
 pub fn init_tracing() {
     let mut lock = FILE_GUARD.lock().expect("Unable to lock mutex");
@@ -61,6 +74,7 @@ pub fn init_tracing() {
     *lock = Some(guard);
 }
 
+#[cfg(not(target_os = "emscripten"))]
 #[inline]
 pub fn deinit_tracing() {
     let mut lock = FILE_GUARD.lock().expect("Unable to lock mutex");

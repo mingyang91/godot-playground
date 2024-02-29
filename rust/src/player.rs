@@ -1,9 +1,65 @@
 use std::cell::{OnceCell};
+use std::f32::consts::PI;
 use std::rc::Rc;
 use godot::engine::{AnimatedSprite2D, Area2D, CollisionShape2D, IArea2D, PhysicsBody2D};
 use godot::prelude::*;
 use crate::bullet::Bullet;
 use crate::pool::{GdPool, Reuse};
+
+struct CoolDown {
+    time: f64,
+    elapsed: f64,
+}
+
+impl CoolDown {
+    fn new(time: f64) -> Self {
+        CoolDown {
+            time,
+            elapsed: 0.0,
+        }
+    }
+
+    fn update(&mut self, delta: f64) {
+        self.elapsed += delta;
+    }
+
+    fn reset(&mut self) {
+        self.elapsed = 0.0;
+    }
+
+    fn ready(&self) -> bool {
+        self.elapsed >= self.time
+    }
+}
+
+struct FloatingGun {
+    cd: CoolDown,
+    period: f64,
+    angle: f64,
+}
+
+impl FloatingGun {
+    fn new(cd: f64, period: f64, start_angel: f64) -> Self {
+        FloatingGun {
+            cd: CoolDown::new(cd),
+            period,
+            angle: start_angel,
+        }
+    }
+
+    fn update(&mut self, delta: f64) {
+        self.cd.update(delta);
+        self.angle += delta * self.period;
+    }
+
+    fn reset(&mut self) {
+        self.cd.reset();
+    }
+
+    fn ready(&self) -> bool {
+        self.cd.ready()
+    }
+}
 
 #[derive(GodotClass)]
 #[class(base=Area2D)]
@@ -11,6 +67,8 @@ pub struct Player {
     speed: real,
     screen_size: Vector2,
     bullet_pool: OnceCell<GdPool<Gd<Bullet>>>,
+    attach_cd: CoolDown,
+    floating_guns: Vec<FloatingGun>,
 
     base: Base<Area2D>,
 }
@@ -62,10 +120,16 @@ impl Player {
 impl IArea2D for Player {
     fn init(base: Base<Area2D>) -> Self {
         tracing::error!("Player thread: {:?}", std::thread::current().id());
+        let gun_nums = 8;
+        let floating_guns = (0..gun_nums)
+            .map(|i| FloatingGun::new(0.1, 1.0, (PI as f64 * 2.0 / gun_nums as f64) * i as f64))
+            .collect();
         Player {
             speed: 400.0,
-            bullet_pool: OnceCell::new(),
             screen_size: Vector2::new(0.0, 0.0),
+            floating_guns,
+            bullet_pool: OnceCell::new(),
+            attach_cd: CoolDown::new(0.1),
             base,
         }
     }
@@ -76,7 +140,7 @@ impl IArea2D for Player {
         self.screen_size = viewport.size;
         let bullet_scene = load::<PackedScene>("res://Bullet.tscn");
         let base = self.base().clone();
-        let pool = GdPool::new(10, || {
+        let pool = GdPool::new(1000, || {
             tracing::debug!("Instantiate bullet");
             let bullet = bullet_scene.instantiate_as::<Bullet>();
             let Some(mut parent) = base.get_parent() else {
@@ -114,12 +178,32 @@ impl IArea2D for Player {
             velocity += Vector2::UP;
         }
 
-        if input.is_action_just_released("attack".into()) {
-            let start = self.base().get_global_position();
-            let bullet = self.create_bullet();
-            let mut bullet = bullet.borrow_mut();
-            bullet.bind_mut().shot(start, velocity);
-            tracing::debug!("bullet shot");
+        if input.is_action_pressed("attack".into()) {
+            for g_index in 0..self.floating_guns.len() {
+                if self.floating_guns[g_index].ready() {
+                    self.floating_guns[g_index].reset();
+                    let angle = self.floating_guns[g_index].angle;
+                    let bullet = self.create_bullet();
+                    let start = self.base().get_global_position();
+                    let mut bullet = bullet.borrow_mut();
+                    let dir = Vector2::new(angle.cos() as real, angle.sin() as real);
+                    bullet.bind_mut().shot(start, dir);
+                    tracing::debug!("bullet shot");
+                } else {
+                    self.floating_guns[g_index].update(delta);
+                }
+            }
+            // if self.attach_cd.ready() {
+            //     self.attach_cd.reset();
+            //     let start = self.base().get_global_position();
+            //     let bullet = self.create_bullet();
+            //     let mut bullet = bullet.borrow_mut();
+            //     let dir = Vector2::new(0.0, -1.0);
+            //     bullet.bind_mut().shot(start, dir);
+            //     tracing::debug!("bullet shot");
+            // } else {
+            //     self.attach_cd.update(delta);
+            // }
         }
 
         if velocity.length() > 0.0 {
