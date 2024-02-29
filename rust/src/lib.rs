@@ -17,6 +17,10 @@ mod player;
 mod logger;
 mod bullet;
 pub mod pool;
+mod footman;
+mod alignment;
+
+mod enums;
 
 struct DodgeTheCreeps;
 
