@@ -1,0 +1,20 @@
+[build]
+target = "aarch64-apple-darwin"
+# The cargo flag "-Zbuild-std" is also required but this cannot yet be specified for specific
+# targets: https://github.com/rust-lang/cargo/issues/8733
+[target.wasm32-unknown-emscripten]
+rustflags = [
+    "-C", "link-arg=--no-entry",
+    "-C", "link-args=-sSIDE_MODULE=2",
+    "-C", "link-args=-sUSE_PTHREADS=1",
+    "-C", "link-args=-sPTHREAD_POOL_SIZE=16",
+    "-C", "link-args=-sNO_DISABLE_EXCEPTION_CATCHING",
+#    "-C", "link-args=-sEMULATE_FUNCTION_POINTER_CASTS",
+#    "-C", "link-args=-sWASM_BIGINT=1",
+    "-C", "target-feature=+atomics,+bulk-memory,+mutable-globals",
+    "-Zlink-native-libraries=no",
+]
+#
+#
+#[unstable]
+#build-std = ["panic_abort", "std"]
