@@ -120,14 +120,18 @@ impl Player {
 impl IArea2D for Player {
     fn init(base: Base<Area2D>) -> Self {
         tracing::error!("Player thread: {:?}", std::thread::current().id());
-        let gun_nums = 8;
-        let floating_guns = (0..gun_nums)
+        let gun_nums = 4;
+        let mut floating_guns_1: Vec<_> = (0..gun_nums)
             .map(|i| FloatingGun::new(0.1, 1.0, (PI as f64 * 2.0 / gun_nums as f64) * i as f64))
             .collect();
+        let floating_guns_2: Vec<_> = (0..gun_nums)
+            .map(|i| FloatingGun::new(0.1, -1.0, (PI as f64 * 2.0 / gun_nums as f64) * i as f64))
+            .collect();
+        floating_guns_1.extend(floating_guns_2);
         Player {
             speed: 400.0,
             screen_size: Vector2::new(0.0, 0.0),
-            floating_guns,
+            floating_guns: floating_guns_1,
             bullet_pool: OnceCell::new(),
             attach_cd: CoolDown::new(0.1),
             base,
