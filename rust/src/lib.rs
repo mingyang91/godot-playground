@@ -21,6 +21,7 @@ mod footman;
 mod alignment;
 
 mod enums;
+mod ability;
 
 struct DodgeTheCreeps;
 

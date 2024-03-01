@@ -1,6 +1,6 @@
 use std::fmt::{Display, Formatter};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Moral {
     Good,
     Neutral,
@@ -17,7 +17,7 @@ impl Display for Moral {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub enum Ethical {
     Lawful,
     Neutral,
@@ -34,7 +34,7 @@ impl Display for Ethical {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Alignment {
     moral: Moral,
     ethical: Ethical,

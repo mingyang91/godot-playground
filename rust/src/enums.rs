@@ -1,7 +1,7 @@
 use std::mem::size_of;
 use bitflags::{bitflags, Flags};
 
-#[derive(Debug)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum AbilityType {
     Strength,
     Dexterity,
@@ -50,6 +50,7 @@ bitflags! {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum ArmorType {
     Light,
     Medium,
@@ -86,6 +87,7 @@ bitflags! {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum WeaponType {
     SimpleMelee,
     SimpleRanged,
@@ -126,6 +128,7 @@ impl From<WeaponType> for WeaponBits {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum ShieldType {
     Buckler,
     Heater,
@@ -166,6 +169,7 @@ impl From<ShieldType> for ShieldBits {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum SkillType {
     Acrobatics,
     AnimalHandling,
@@ -262,6 +266,7 @@ impl From<SkillType> for SkillBits {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum RaceType {
     Dwarf,
     Elf,
@@ -322,6 +327,7 @@ impl From<RaceType> for RaceBits {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum ClassType {
     Barbarian,
     Bard,
@@ -394,6 +400,7 @@ impl From<ClassType> for ClassBits {
     }
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub enum Proficiency {
     Armor(ArmorType),
     Weapon(WeaponType),
@@ -413,52 +420,52 @@ pub enum Proficiency {
 * 25-31: Saving Throws
 * 32-63: Skills
 */
-type ps = u128;
+type ProfSize = u128;
 
-const ARMOR_START: ps = 0;
-const WEAPON_START: ps = size_of::<<ArmorBits as Flags>::Bits>() as ps;
-const SHIELD_START: ps = size_of::<<WeaponBits as Flags>::Bits>() as ps + WEAPON_START;
-const SAVING_THROW_START: ps = size_of::<<ShieldBits as Flags>::Bits>() as ps + SHIELD_START;
-const SKILL_START: ps = size_of::<<AbilityBits as Flags>::Bits>() as ps + SAVING_THROW_START;
+const ARMOR_START: ProfSize = 8 * 0;
+const WEAPON_START: ProfSize = ARMOR_START + 8 * size_of::<<ArmorBits as Flags>::Bits>() as ProfSize;
+const SHIELD_START: ProfSize = WEAPON_START + 8 * size_of::<<WeaponBits as Flags>::Bits>() as ProfSize;
+const SAVING_THROW_START: ProfSize = SHIELD_START + 8 * size_of::<<ShieldBits as Flags>::Bits>() as ProfSize;
+const SKILL_START: ProfSize = SAVING_THROW_START + 8 * size_of::<<AbilityBits as Flags>::Bits>() as ProfSize;
 
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct Proficiencies: u128 {
-        const LIGHT_ARMOR       = (ArmorBits::LIGHT.bits() as ps) << ARMOR_START;
-        const MEDIUM_ARMOR      = (ArmorBits::MEDIUM.bits() as ps) << ARMOR_START;
-        const HEAVY_ARMOR       = (ArmorBits::HEAVY.bits() as ps) << ARMOR_START;
-        const SIMPLE_MELEE      = (WeaponBits::SIMPLE_MELEE.bits() as ps) << WEAPON_START;
-        const SIMPLE_RANGED     = (WeaponBits::SIMPLE_RANGED.bits() as ps) << WEAPON_START;
-        const MARTIAL_MELEE     = (WeaponBits::MARTIAL_MELEE.bits() as ps) << WEAPON_START;
-        const MARTIAL_RANGED    = (WeaponBits::MARTIAL_RANGED.bits() as ps) << WEAPON_START;
-        const BUCKLER           = (ShieldBits::BUCKLER.bits() as ps) << SHIELD_START;
-        const HEATER            = (ShieldBits::HEATER.bits() as ps) << SHIELD_START;
-        const KITE              = (ShieldBits::KITE.bits() as ps) << SHIELD_START;
-        const TOWER             = (ShieldBits::TOWER.bits() as ps) << SHIELD_START;
-        const STRENGTH_SAVE     = (AbilityBits::STRENGTH.bits() as ps) << SAVING_THROW_START;
-        const DEXTERITY_SAVE    = (AbilityBits::DEXTERITY.bits() as ps) << SAVING_THROW_START;
-        const CONSTITUTION_SAVE = (AbilityBits::CONSTITUTION.bits() as ps) << SAVING_THROW_START;
-        const INTELLIGENCE_SAVE = (AbilityBits::INTELLIGENCE.bits() as ps) << SAVING_THROW_START;
-        const WISDOM_SAVE       = (AbilityBits::WISDOM.bits() as ps) << SAVING_THROW_START;
-        const CHARISMA_SAVE     = (AbilityBits::CHARISMA.bits() as ps) << SAVING_THROW_START;
-        const ACROBATICS        = (SkillBits::ACROBATICS.bits() as ps) << SKILL_START;
-        const ANIMAL_HANDLING   = (SkillBits::ANIMAL_HANDLING.bits() as ps) << SKILL_START;
-        const ARCANA            = (SkillBits::ARCANA.bits() as ps) << SKILL_START;
-        const ATHLETICS         = (SkillBits::ATHLETICS.bits() as ps) << SKILL_START;
-        const DECEPTION         = (SkillBits::DECEPTION.bits() as ps) << SKILL_START;
-        const HISTORY           = (SkillBits::HISTORY.bits() as ps) << SKILL_START;
-        const INSIGHT           = (SkillBits::INSIGHT.bits() as ps) << SKILL_START;
-        const INTIMIDATION      = (SkillBits::INTIMIDATION.bits() as ps) << SKILL_START;
-        const INVESTIGATION     = (SkillBits::INVESTIGATION.bits() as ps) << SKILL_START;
-        const MEDICINE          = (SkillBits::MEDICINE.bits() as ps) << SKILL_START;
-        const NATURE            = (SkillBits::NATURE.bits() as ps) << SKILL_START;
-        const PERCEPTION        = (SkillBits::PERCEPTION.bits() as ps) << SKILL_START;
-        const PERFORMANCE       = (SkillBits::PERFORMANCE.bits() as ps) << SKILL_START;
-        const PERSUASION        = (SkillBits::PERSUASION.bits() as ps) << SKILL_START;
-        const RELIGION          = (SkillBits::RELIGION.bits() as ps) << SKILL_START;
-        const SLEIGHT_OF_HAND   = (SkillBits::SLEIGHT_OF_HAND.bits() as ps) << SKILL_START;
-        const STEALTH           = (SkillBits::STEALTH.bits() as ps) << SKILL_START;
-        const SURVIVAL          = (SkillBits::SURVIVAL.bits() as ps) << SKILL_START;
+        const LIGHT_ARMOR       = (ArmorBits::LIGHT.bits() as ProfSize) << ARMOR_START;
+        const MEDIUM_ARMOR      = (ArmorBits::MEDIUM.bits() as ProfSize) << ARMOR_START;
+        const HEAVY_ARMOR       = (ArmorBits::HEAVY.bits() as ProfSize) << ARMOR_START;
+        const SIMPLE_MELEE      = (WeaponBits::SIMPLE_MELEE.bits() as ProfSize) << WEAPON_START;
+        const SIMPLE_RANGED     = (WeaponBits::SIMPLE_RANGED.bits() as ProfSize) << WEAPON_START;
+        const MARTIAL_MELEE     = (WeaponBits::MARTIAL_MELEE.bits() as ProfSize) << WEAPON_START;
+        const MARTIAL_RANGED    = (WeaponBits::MARTIAL_RANGED.bits() as ProfSize) << WEAPON_START;
+        const BUCKLER           = (ShieldBits::BUCKLER.bits() as ProfSize) << SHIELD_START;
+        const HEATER            = (ShieldBits::HEATER.bits() as ProfSize) << SHIELD_START;
+        const KITE              = (ShieldBits::KITE.bits() as ProfSize) << SHIELD_START;
+        const TOWER             = (ShieldBits::TOWER.bits() as ProfSize) << SHIELD_START;
+        const STRENGTH_SAVE     = (AbilityBits::STRENGTH.bits() as ProfSize) << SAVING_THROW_START;
+        const DEXTERITY_SAVE    = (AbilityBits::DEXTERITY.bits() as ProfSize) << SAVING_THROW_START;
+        const CONSTITUTION_SAVE = (AbilityBits::CONSTITUTION.bits() as ProfSize) << SAVING_THROW_START;
+        const INTELLIGENCE_SAVE = (AbilityBits::INTELLIGENCE.bits() as ProfSize) << SAVING_THROW_START;
+        const WISDOM_SAVE       = (AbilityBits::WISDOM.bits() as ProfSize) << SAVING_THROW_START;
+        const CHARISMA_SAVE     = (AbilityBits::CHARISMA.bits() as ProfSize) << SAVING_THROW_START;
+        const ACROBATICS        = (SkillBits::ACROBATICS.bits() as ProfSize) << SKILL_START;
+        const ANIMAL_HANDLING   = (SkillBits::ANIMAL_HANDLING.bits() as ProfSize) << SKILL_START;
+        const ARCANA            = (SkillBits::ARCANA.bits() as ProfSize) << SKILL_START;
+        const ATHLETICS         = (SkillBits::ATHLETICS.bits() as ProfSize) << SKILL_START;
+        const DECEPTION         = (SkillBits::DECEPTION.bits() as ProfSize) << SKILL_START;
+        const HISTORY           = (SkillBits::HISTORY.bits() as ProfSize) << SKILL_START;
+        const INSIGHT           = (SkillBits::INSIGHT.bits() as ProfSize) << SKILL_START;
+        const INTIMIDATION      = (SkillBits::INTIMIDATION.bits() as ProfSize) << SKILL_START;
+        const INVESTIGATION     = (SkillBits::INVESTIGATION.bits() as ProfSize) << SKILL_START;
+        const MEDICINE          = (SkillBits::MEDICINE.bits() as ProfSize) << SKILL_START;
+        const NATURE            = (SkillBits::NATURE.bits() as ProfSize) << SKILL_START;
+        const PERCEPTION        = (SkillBits::PERCEPTION.bits() as ProfSize) << SKILL_START;
+        const PERFORMANCE       = (SkillBits::PERFORMANCE.bits() as ProfSize) << SKILL_START;
+        const PERSUASION        = (SkillBits::PERSUASION.bits() as ProfSize) << SKILL_START;
+        const RELIGION          = (SkillBits::RELIGION.bits() as ProfSize) << SKILL_START;
+        const SLEIGHT_OF_HAND   = (SkillBits::SLEIGHT_OF_HAND.bits() as ProfSize) << SKILL_START;
+        const STEALTH           = (SkillBits::STEALTH.bits() as ProfSize) << SKILL_START;
+        const SURVIVAL          = (SkillBits::SURVIVAL.bits() as ProfSize) << SKILL_START;
     }
 }
 
@@ -490,31 +497,31 @@ impl Proficiencies {
     #[inline]
     pub fn add_armor(&mut self, armor: ArmorType) {
         let ab = ArmorBits::from(armor);
-        self.insert(Proficiencies::from_bits_truncate((ab.bits() as ps) << ARMOR_START));
+        self.insert(Proficiencies::from_bits_truncate((ab.bits() as ProfSize) << ARMOR_START));
     }
 
     #[inline]
     pub fn add_weapon(&mut self, weapon: WeaponType) {
         let wb = WeaponBits::from(weapon);
-        self.insert(Proficiencies::from_bits_truncate((wb.bits() as ps) << WEAPON_START));
+        self.insert(Proficiencies::from_bits_truncate((wb.bits() as ProfSize) << WEAPON_START));
     }
 
     #[inline]
     pub fn add_shield(&mut self, shield: ShieldType) {
         let sb = ShieldBits::from(shield);
-        self.insert(Proficiencies::from_bits_truncate((sb.bits() as ps) << SHIELD_START));
+        self.insert(Proficiencies::from_bits_truncate((sb.bits() as ProfSize) << SHIELD_START));
     }
 
     #[inline]
     pub fn add_saving_throw(&mut self, ability: AbilityType) {
         let ab = AbilityBits::from(ability);
-        self.insert(Proficiencies::from_bits_truncate((ab.bits() as ps) << SAVING_THROW_START));
+        self.insert(Proficiencies::from_bits_truncate((ab.bits() as ProfSize) << SAVING_THROW_START));
     }
 
     #[inline]
     pub fn add_skill(&mut self, skill: SkillType) {
         let sb = SkillBits::from(skill);
-        self.insert(Proficiencies::from_bits_truncate((sb.bits() as ps) << SKILL_START));
+        self.insert(Proficiencies::from_bits_truncate((sb.bits() as ProfSize) << SKILL_START));
     }
 
     #[inline]

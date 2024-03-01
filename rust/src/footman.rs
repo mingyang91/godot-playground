@@ -1,42 +1,7 @@
 use std::fmt::Display;
-use std::ops::Add;
+use crate::ability::Ability;
 use crate::alignment::{Alignment, Ethical, Moral};
 use crate::enums::{Proficiencies, ShieldType, WeaponType};
-
-#[derive(Debug, Clone)]
-pub struct Ability {
-    strength: u8,
-    dexterity: u8,
-    constitution: u8,
-    intelligence: u8,
-    wisdom: u8,
-    charisma: u8,
-    hit_points: u32,
-}
-
-impl Add for Ability {
-    type Output = Self;
-
-    fn add(self, other: Self) -> Self {
-        Ability {
-            strength: self.strength + other.strength,
-            dexterity: self.dexterity + other.dexterity,
-            constitution: self.constitution + other.constitution,
-            intelligence: self.intelligence + other.intelligence,
-            wisdom: self.wisdom + other.wisdom,
-            charisma: self.charisma + other.charisma,
-            hit_points: self.hit_points + other.hit_points,
-        }
-    }
-}
-
-impl Display for Ability {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        write!(f, "Ability: str: {}, dex: {}, con: {}, int: {}, wis: {}, cha: {}, hp: {}",
-               self.strength, self.dexterity, self.constitution, self.intelligence,
-               self.wisdom, self.charisma, self.hit_points)
-    }
-}
 
 #[derive(Debug, Clone)]
 struct CharacterClass {
@@ -81,6 +46,7 @@ trait Shield {
     fn defend(&self);
 }
 
+#[derive(Debug, Clone)]
 struct HumanWarrior {
     ability: Ability,
     name: String,
@@ -179,5 +145,32 @@ impl HumanWarrior {
             ),
             proficiencies: Proficiencies::new()
         }
+    }
+}
+
+#[cfg(test)]
+mod test {
+    use crate::enums::{AbilityType, ArmorType, ShieldType, SkillType, WeaponType};
+
+    #[test]
+    fn test_human_warrior() {
+        let mut human_warrior = super::HumanWarrior::new("Bob".to_string(), 1, 10, 10);
+        assert_eq!(human_warrior.name, "Bob");
+        assert_eq!(human_warrior.level, 1);
+        assert_eq!(human_warrior.health, 10);
+        assert_eq!(human_warrior.armor_class, 10);
+        assert_eq!(human_warrior.alignment, super::Alignment::new(
+            super::Moral::Good,
+            super::Ethical::Neutral,
+        ));
+
+        println!("{:?}", human_warrior);
+        human_warrior.proficiencies.add_armor(ArmorType::Light);
+        human_warrior.proficiencies.add_skill(SkillType::Acrobatics);
+        human_warrior.proficiencies.add_shield(ShieldType::Buckler);
+        human_warrior.proficiencies.add_saving_throw(AbilityType::Dexterity);
+        human_warrior.proficiencies.add_saving_throw(AbilityType::Intelligence);
+        human_warrior.proficiencies.add_weapon(WeaponType::MartialMelee);
+        println!("{:?}", human_warrior.proficiencies.get_proficiency_list());
     }
 }
