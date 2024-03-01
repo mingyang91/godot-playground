@@ -11,42 +11,45 @@ pub enum AbilityType {
     Charisma,
 }
 
+#[rustfmt::skip]
 impl From<AbilityBits> for AbilityType {
     fn from(ability: AbilityBits) -> Self {
         match ability {
-            AbilityBits::STRENGTH => AbilityType::Strength,
-            AbilityBits::DEXTERITY => AbilityType::Dexterity,
+            AbilityBits::STRENGTH     => AbilityType::Strength,
+            AbilityBits::DEXTERITY    => AbilityType::Dexterity,
             AbilityBits::CONSTITUTION => AbilityType::Constitution,
             AbilityBits::INTELLIGENCE => AbilityType::Intelligence,
-            AbilityBits::WISDOM => AbilityType::Wisdom,
-            AbilityBits::CHARISMA => AbilityType::Charisma,
-            _ => unreachable!("Invalid ability bits"),
+            AbilityBits::WISDOM       => AbilityType::Wisdom,
+            AbilityBits::CHARISMA     => AbilityType::Charisma,
+            _                         => unreachable!("Invalid ability bits"),
         }
     }
 }
 
+#[rustfmt::skip]
 impl From<AbilityType> for AbilityBits {
     fn from(ability: AbilityType) -> Self {
         match ability {
-            AbilityType::Strength => AbilityBits::STRENGTH,
-            AbilityType::Dexterity => AbilityBits::DEXTERITY,
+            AbilityType::Strength     => AbilityBits::STRENGTH,
+            AbilityType::Dexterity    => AbilityBits::DEXTERITY,
             AbilityType::Constitution => AbilityBits::CONSTITUTION,
             AbilityType::Intelligence => AbilityBits::INTELLIGENCE,
-            AbilityType::Wisdom => AbilityBits::WISDOM,
-            AbilityType::Charisma => AbilityBits::CHARISMA,
+            AbilityType::Wisdom       => AbilityBits::WISDOM,
+            AbilityType::Charisma     => AbilityBits::CHARISMA,
         }
     }
 }
 
+#[rustfmt::skip]
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct AbilityBits: u8 {
-        const STRENGTH = 0b00000001;
-        const DEXTERITY = 0b00000010;
+        const STRENGTH     = 0b00000001;
+        const DEXTERITY    = 0b00000010;
         const CONSTITUTION = 0b00000100;
         const INTELLIGENCE = 0b00001000;
-        const WISDOM = 0b00010000;
-        const CHARISMA = 0b00100000;
+        const WISDOM       = 0b00010000;
+        const CHARISMA     = 0b00100000;
     }
 }
 
@@ -57,33 +60,36 @@ pub enum ArmorType {
     Heavy,
 }
 
+#[rustfmt::skip]
 impl From<ArmorBits> for ArmorType {
     fn from(armor: ArmorBits) -> Self {
         match armor {
-            ArmorBits::LIGHT => ArmorType::Light,
+            ArmorBits::LIGHT  => ArmorType::Light,
             ArmorBits::MEDIUM => ArmorType::Medium,
-            ArmorBits::HEAVY => ArmorType::Heavy,
-            _ => unreachable!("Invalid armor bits"),
+            ArmorBits::HEAVY  => ArmorType::Heavy,
+            _                 => unreachable!("Invalid armor bits"),
         }
     }
 }
 
+#[rustfmt::skip]
 impl From<ArmorType> for ArmorBits {
     fn from(armor: ArmorType) -> Self {
         match armor {
-            ArmorType::Light => ArmorBits::LIGHT,
+            ArmorType::Light  => ArmorBits::LIGHT,
             ArmorType::Medium => ArmorBits::MEDIUM,
-            ArmorType::Heavy => ArmorBits::HEAVY,
+            ArmorType::Heavy  => ArmorBits::HEAVY,
         }
     }
 }
 
+#[rustfmt::skip]
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct ArmorBits: u8 {
-        const LIGHT = 0b00000001;
+        const LIGHT  = 0b00000001;
         const MEDIUM = 0b00000010;
-        const HEAVY = 0b00000100;
+        const HEAVY  = 0b00000100;
     }
 }
 
@@ -95,34 +101,37 @@ pub enum WeaponType {
     MartialRanged,
 }
 
+#[rustfmt::skip]
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct WeaponBits: u8 {
-        const SIMPLE_MELEE = 0b00000001;
-        const SIMPLE_RANGED = 0b00000010;
-        const MARTIAL_MELEE = 0b00000100;
+        const SIMPLE_MELEE   = 0b00000001;
+        const SIMPLE_RANGED  = 0b00000010;
+        const MARTIAL_MELEE  = 0b00000100;
         const MARTIAL_RANGED = 0b00001000;
     }
 }
 
+#[rustfmt::skip]
 impl From<WeaponBits> for WeaponType {
     fn from(weapon: WeaponBits) -> Self {
         match weapon {
-            WeaponBits::SIMPLE_MELEE => WeaponType::SimpleMelee,
-            WeaponBits::SIMPLE_RANGED => WeaponType::SimpleRanged,
-            WeaponBits::MARTIAL_MELEE => WeaponType::MartialMelee,
+            WeaponBits::SIMPLE_MELEE   => WeaponType::SimpleMelee,
+            WeaponBits::SIMPLE_RANGED  => WeaponType::SimpleRanged,
+            WeaponBits::MARTIAL_MELEE  => WeaponType::MartialMelee,
             WeaponBits::MARTIAL_RANGED => WeaponType::MartialRanged,
-            _ => unreachable!("Invalid weapon bits"),
+            _                          => unreachable!("Invalid weapon bits"),
         }
     }
 }
 
+#[rustfmt::skip]
 impl From<WeaponType> for WeaponBits {
     fn from(weapon: WeaponType) -> Self {
         match weapon {
-            WeaponType::SimpleMelee => WeaponBits::SIMPLE_MELEE,
-            WeaponType::SimpleRanged => WeaponBits::SIMPLE_RANGED,
-            WeaponType::MartialMelee => WeaponBits::MARTIAL_MELEE,
+            WeaponType::SimpleMelee   => WeaponBits::SIMPLE_MELEE,
+            WeaponType::SimpleRanged  => WeaponBits::SIMPLE_RANGED,
+            WeaponType::MartialMelee  => WeaponBits::MARTIAL_MELEE,
             WeaponType::MartialRanged => WeaponBits::MARTIAL_RANGED,
         }
     }
@@ -136,35 +145,38 @@ pub enum ShieldType {
     Tower,
 }
 
+#[rustfmt::skip]
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct ShieldBits: u8 {
         const BUCKLER = 0b00000001;
-        const HEATER = 0b00000010;
-        const KITE = 0b00000100;
-        const TOWER = 0b00001000;
+        const HEATER  = 0b00000010;
+        const KITE    = 0b00000100;
+        const TOWER   = 0b00001000;
     }
 }
 
+#[rustfmt::skip]
 impl From<ShieldBits> for ShieldType {
     fn from(value: ShieldBits) -> Self {
         match value {
             ShieldBits::BUCKLER => ShieldType::Buckler,
-            ShieldBits::HEATER => ShieldType::Heater,
-            ShieldBits::KITE => ShieldType::Kite,
-            ShieldBits::TOWER => ShieldType::Tower,
-            _ => unreachable!("Invalid shield bits"),
+            ShieldBits::HEATER  => ShieldType::Heater,
+            ShieldBits::KITE    => ShieldType::Kite,
+            ShieldBits::TOWER   => ShieldType::Tower,
+            _                   => unreachable!("Invalid shield bits"),
         }
     }
 }
 
+#[rustfmt::skip]
 impl From<ShieldType> for ShieldBits {
     fn from(value: ShieldType) -> Self {
         match value {
             ShieldType::Buckler => ShieldBits::BUCKLER,
-            ShieldType::Heater => ShieldBits::HEATER,
-            ShieldType::Kite => ShieldBits::KITE,
-            ShieldType::Tower => ShieldBits::TOWER,
+            ShieldType::Heater  => ShieldBits::HEATER,
+            ShieldType::Kite    => ShieldBits::KITE,
+            ShieldType::Tower   => ShieldBits::TOWER,
         }
     }
 }
@@ -191,6 +203,7 @@ pub enum SkillType {
     Survival,
 }
 
+#[rustfmt::skip]
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct SkillBits: u32 {
@@ -215,53 +228,55 @@ bitflags! {
     }
 }
 
+#[rustfmt::skip]
 impl From<SkillBits> for SkillType {
     fn from(value: SkillBits) -> Self {
         match value {
-            SkillBits::ACROBATICS => SkillType::Acrobatics,
+            SkillBits::ACROBATICS      => SkillType::Acrobatics,
             SkillBits::ANIMAL_HANDLING => SkillType::AnimalHandling,
-            SkillBits::ARCANA => SkillType::Arcana,
-            SkillBits::ATHLETICS => SkillType::Athletics,
-            SkillBits::DECEPTION => SkillType::Deception,
-            SkillBits::HISTORY => SkillType::History,
-            SkillBits::INSIGHT => SkillType::Insight,
-            SkillBits::INTIMIDATION => SkillType::Intimidation,
-            SkillBits::INVESTIGATION => SkillType::Investigation,
-            SkillBits::MEDICINE => SkillType::Medicine,
-            SkillBits::NATURE => SkillType::Nature,
-            SkillBits::PERCEPTION => SkillType::Perception,
-            SkillBits::PERFORMANCE => SkillType::Performance,
-            SkillBits::PERSUASION => SkillType::Persuasion,
-            SkillBits::RELIGION => SkillType::Religion,
+            SkillBits::ARCANA          => SkillType::Arcana,
+            SkillBits::ATHLETICS       => SkillType::Athletics,
+            SkillBits::DECEPTION       => SkillType::Deception,
+            SkillBits::HISTORY         => SkillType::History,
+            SkillBits::INSIGHT         => SkillType::Insight,
+            SkillBits::INTIMIDATION    => SkillType::Intimidation,
+            SkillBits::INVESTIGATION   => SkillType::Investigation,
+            SkillBits::MEDICINE        => SkillType::Medicine,
+            SkillBits::NATURE          => SkillType::Nature,
+            SkillBits::PERCEPTION      => SkillType::Perception,
+            SkillBits::PERFORMANCE     => SkillType::Performance,
+            SkillBits::PERSUASION      => SkillType::Persuasion,
+            SkillBits::RELIGION        => SkillType::Religion,
             SkillBits::SLEIGHT_OF_HAND => SkillType::SleightOfHand,
-            SkillBits::STEALTH => SkillType::Stealth,
-            SkillBits::SURVIVAL => SkillType::Survival,
-            _ => unreachable!("Invalid skill bits"),
+            SkillBits::STEALTH         => SkillType::Stealth,
+            SkillBits::SURVIVAL        => SkillType::Survival,
+            _                          => unreachable!("Invalid skill bits"),
         }
     }
 }
 
+#[rustfmt::skip]
 impl From<SkillType> for SkillBits {
     fn from(value: SkillType) -> Self {
         match value {
-            SkillType::Acrobatics => SkillBits::ACROBATICS,
+            SkillType::Acrobatics     => SkillBits::ACROBATICS,
             SkillType::AnimalHandling => SkillBits::ANIMAL_HANDLING,
-            SkillType::Arcana => SkillBits::ARCANA,
-            SkillType::Athletics => SkillBits::ATHLETICS,
-            SkillType::Deception => SkillBits::DECEPTION,
-            SkillType::History => SkillBits::HISTORY,
-            SkillType::Insight => SkillBits::INSIGHT,
-            SkillType::Intimidation => SkillBits::INTIMIDATION,
-            SkillType::Investigation => SkillBits::INVESTIGATION,
-            SkillType::Medicine => SkillBits::MEDICINE,
-            SkillType::Nature => SkillBits::NATURE,
-            SkillType::Perception => SkillBits::PERCEPTION,
-            SkillType::Performance => SkillBits::PERFORMANCE,
-            SkillType::Persuasion => SkillBits::PERSUASION,
-            SkillType::Religion => SkillBits::RELIGION,
-            SkillType::SleightOfHand => SkillBits::SLEIGHT_OF_HAND,
-            SkillType::Stealth => SkillBits::STEALTH,
-            SkillType::Survival => SkillBits::SURVIVAL,
+            SkillType::Arcana         => SkillBits::ARCANA,
+            SkillType::Athletics      => SkillBits::ATHLETICS,
+            SkillType::Deception      => SkillBits::DECEPTION,
+            SkillType::History        => SkillBits::HISTORY,
+            SkillType::Insight        => SkillBits::INSIGHT,
+            SkillType::Intimidation   => SkillBits::INTIMIDATION,
+            SkillType::Investigation  => SkillBits::INVESTIGATION,
+            SkillType::Medicine       => SkillBits::MEDICINE,
+            SkillType::Nature         => SkillBits::NATURE,
+            SkillType::Perception     => SkillBits::PERCEPTION,
+            SkillType::Performance    => SkillBits::PERFORMANCE,
+            SkillType::Persuasion     => SkillBits::PERSUASION,
+            SkillType::Religion       => SkillBits::RELIGION,
+            SkillType::SleightOfHand  => SkillBits::SLEIGHT_OF_HAND,
+            SkillType::Stealth        => SkillBits::STEALTH,
+            SkillType::Survival       => SkillBits::SURVIVAL,
         }
     }
 }
@@ -279,50 +294,53 @@ pub enum RaceType {
     Tiefling,
 }
 
+#[rustfmt::skip]
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct RaceBits: u16 {
-        const DWARF = 0b0000000000000001;
-        const ELF = 0b0000000000000010;
-        const HALFLING = 0b0000000000000100;
-        const HUMAN = 0b0000000000001000;
+        const DWARF      = 0b0000000000000001;
+        const ELF        = 0b0000000000000010;
+        const HALFLING   = 0b0000000000000100;
+        const HUMAN      = 0b0000000000001000;
         const DRAGONBORN = 0b0000000000010000;
-        const GNOME = 0b0000000000100000;
-        const HALF_ELF = 0b0000000001000000;
-        const HALF_ORC = 0b0000000010000000;
-        const TIEFLING = 0b0000000100000000;
+        const GNOME      = 0b0000000000100000;
+        const HALF_ELF   = 0b0000000001000000;
+        const HALF_ORC   = 0b0000000010000000;
+        const TIEFLING   = 0b0000000100000000;
     }
 }
 
+#[rustfmt::skip]
 impl From<RaceBits> for RaceType {
     fn from(value: RaceBits) -> Self {
         match value {
-            RaceBits::DWARF => RaceType::Dwarf,
-            RaceBits::ELF => RaceType::Elf,
-            RaceBits::HALFLING => RaceType::Halfling,
-            RaceBits::HUMAN => RaceType::Human,
+            RaceBits::DWARF      => RaceType::Dwarf,
+            RaceBits::ELF        => RaceType::Elf,
+            RaceBits::HALFLING   => RaceType::Halfling,
+            RaceBits::HUMAN      => RaceType::Human,
             RaceBits::DRAGONBORN => RaceType::Dragonborn,
-            RaceBits::GNOME => RaceType::Gnome,
-            RaceBits::HALF_ELF => RaceType::HalfElf,
-            RaceBits::HALF_ORC => RaceType::HalfOrc,
-            RaceBits::TIEFLING => RaceType::Tiefling,
-            _ => unreachable!("Invalid race bits"),
+            RaceBits::GNOME      => RaceType::Gnome,
+            RaceBits::HALF_ELF   => RaceType::HalfElf,
+            RaceBits::HALF_ORC   => RaceType::HalfOrc,
+            RaceBits::TIEFLING   => RaceType::Tiefling,
+            _                    => unreachable!("Invalid race bits"),
         }
     }
 }
 
+#[rustfmt::skip]
 impl From<RaceType> for RaceBits {
     fn from(value: RaceType) -> Self {
         match value {
-            RaceType::Dwarf => RaceBits::DWARF,
-            RaceType::Elf => RaceBits::ELF,
-            RaceType::Halfling => RaceBits::HALFLING,
-            RaceType::Human => RaceBits::HUMAN,
+            RaceType::Dwarf      => RaceBits::DWARF,
+            RaceType::Elf        => RaceBits::ELF,
+            RaceType::Halfling   => RaceBits::HALFLING,
+            RaceType::Human      => RaceBits::HUMAN,
             RaceType::Dragonborn => RaceBits::DRAGONBORN,
-            RaceType::Gnome => RaceBits::GNOME,
-            RaceType::HalfElf => RaceBits::HALF_ELF,
-            RaceType::HalfOrc => RaceBits::HALF_ORC,
-            RaceType::Tiefling => RaceBits::TIEFLING,
+            RaceType::Gnome      => RaceBits::GNOME,
+            RaceType::HalfElf    => RaceBits::HALF_ELF,
+            RaceType::HalfOrc    => RaceBits::HALF_ORC,
+            RaceType::Tiefling   => RaceBits::TIEFLING,
         }
     }
 }
@@ -343,6 +361,7 @@ pub enum ClassType {
     Wizard,
 }
 
+#[rustfmt::skip]
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct ClassBits: u16 {
@@ -361,41 +380,43 @@ bitflags! {
     }
 }
 
+#[rustfmt::skip]
 impl From<ClassBits> for ClassType {
     fn from(value: ClassBits) -> Self {
         match value {
             ClassBits::BARBARIAN => ClassType::Barbarian,
-            ClassBits::BARD => ClassType::Bard,
-            ClassBits::CLERIC => ClassType::Cleric,
-            ClassBits::DRUID => ClassType::Druid,
-            ClassBits::FIGHTER => ClassType::Fighter,
-            ClassBits::MONK => ClassType::Monk,
-            ClassBits::PALADIN => ClassType::Paladin,
-            ClassBits::RANGER => ClassType::Ranger,
-            ClassBits::ROGUE => ClassType::Rogue,
-            ClassBits::SORCERER => ClassType::Sorcerer,
-            ClassBits::WARLOCK => ClassType::Warlock,
-            ClassBits::WIZARD => ClassType::Wizard,
-            _ => unreachable!("Invalid class bits"),
+            ClassBits::BARD      => ClassType::Bard,
+            ClassBits::CLERIC    => ClassType::Cleric,
+            ClassBits::DRUID     => ClassType::Druid,
+            ClassBits::FIGHTER   => ClassType::Fighter,
+            ClassBits::MONK      => ClassType::Monk,
+            ClassBits::PALADIN   => ClassType::Paladin,
+            ClassBits::RANGER    => ClassType::Ranger,
+            ClassBits::ROGUE     => ClassType::Rogue,
+            ClassBits::SORCERER  => ClassType::Sorcerer,
+            ClassBits::WARLOCK   => ClassType::Warlock,
+            ClassBits::WIZARD    => ClassType::Wizard,
+            _                    => unreachable!("Invalid class bits"),
         }
     }
 }
 
+#[rustfmt::skip]
 impl From<ClassType> for ClassBits {
     fn from(value: ClassType) -> Self {
         match value {
             ClassType::Barbarian => ClassBits::BARBARIAN,
-            ClassType::Bard => ClassBits::BARD,
-            ClassType::Cleric => ClassBits::CLERIC,
-            ClassType::Druid => ClassBits::DRUID,
-            ClassType::Fighter => ClassBits::FIGHTER,
-            ClassType::Monk => ClassBits::MONK,
-            ClassType::Paladin => ClassBits::PALADIN,
-            ClassType::Ranger => ClassBits::RANGER,
-            ClassType::Rogue => ClassBits::ROGUE,
-            ClassType::Sorcerer => ClassBits::SORCERER,
-            ClassType::Warlock => ClassBits::WARLOCK,
-            ClassType::Wizard => ClassBits::WIZARD,
+            ClassType::Bard      => ClassBits::BARD,
+            ClassType::Cleric    => ClassBits::CLERIC,
+            ClassType::Druid     => ClassBits::DRUID,
+            ClassType::Fighter   => ClassBits::FIGHTER,
+            ClassType::Monk      => ClassBits::MONK,
+            ClassType::Paladin   => ClassBits::PALADIN,
+            ClassType::Ranger    => ClassBits::RANGER,
+            ClassType::Rogue     => ClassBits::ROGUE,
+            ClassType::Sorcerer  => ClassBits::SORCERER,
+            ClassType::Warlock   => ClassBits::WARLOCK,
+            ClassType::Wizard    => ClassBits::WIZARD,
         }
     }
 }
@@ -422,12 +443,14 @@ pub enum Proficiency {
 */
 type ProfSize = u128;
 
-const ARMOR_START: ProfSize = 8 * 0;
-const WEAPON_START: ProfSize = ARMOR_START + 8 * size_of::<<ArmorBits as Flags>::Bits>() as ProfSize;
-const SHIELD_START: ProfSize = WEAPON_START + 8 * size_of::<<WeaponBits as Flags>::Bits>() as ProfSize;
-const SAVING_THROW_START: ProfSize = SHIELD_START + 8 * size_of::<<ShieldBits as Flags>::Bits>() as ProfSize;
-const SKILL_START: ProfSize = SAVING_THROW_START + 8 * size_of::<<AbilityBits as Flags>::Bits>() as ProfSize;
+const ARMOR_START:         ProfSize = 8 * 0;
+const WEAPON_START:        ProfSize = ARMOR_START        + 8 * size_of::<<ArmorBits as Flags>::Bits>() as ProfSize;
+const SHIELD_START:        ProfSize = WEAPON_START       + 8 * size_of::<<WeaponBits as Flags>::Bits>() as ProfSize;
+const SAVING_THROW_START:  ProfSize = SHIELD_START       + 8 * size_of::<<ShieldBits as Flags>::Bits>() as ProfSize;
+const SKILL_START:         ProfSize = SAVING_THROW_START + 8 * size_of::<<AbilityBits as Flags>::Bits>() as ProfSize;
 
+
+#[rustfmt::skip]
 bitflags! {
     #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
     pub struct Proficiencies: u128 {
