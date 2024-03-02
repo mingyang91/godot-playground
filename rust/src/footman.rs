@@ -1,4 +1,3 @@
-use std::fmt::Display;
 use crate::ability::Ability;
 use crate::alignment::{Alignment, Ethical, Moral};
 use crate::enums::{Proficiencies, ShieldType, WeaponType};
@@ -111,7 +110,7 @@ impl HumanWarrior {
 
         let warrior = CharacterClass {
             name: "Warrior".to_string(),
-            proficiencies: Proficiencies::new(),
+            proficiencies: Proficiencies::empty(),
             ability_modifier: Ability {
                 strength: 1,
                 dexterity: 1,
@@ -143,7 +142,7 @@ impl HumanWarrior {
                 Moral::Good,
                 Ethical::Neutral,
             ),
-            proficiencies: Proficiencies::new()
+            proficiencies: Proficiencies::empty()
         }
     }
 }
