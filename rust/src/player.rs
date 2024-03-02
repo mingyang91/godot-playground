@@ -144,7 +144,7 @@ impl IArea2D for Player {
         self.screen_size = viewport.size;
         let bullet_scene = load::<PackedScene>("res://Bullet.tscn");
         let base = self.base().clone();
-        let pool = GdPool::new(1000, || {
+        let pool = GdPool::new(10, || {
             tracing::debug!("Instantiate bullet");
             let bullet = bullet_scene.instantiate_as::<Bullet>();
             let Some(mut parent) = base.get_parent() else {

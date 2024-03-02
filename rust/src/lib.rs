@@ -14,6 +14,7 @@ mod hud;
 mod main_scene;
 mod mob;
 mod player;
+mod goblin;
 mod logger;
 mod bullet;
 pub mod pool;

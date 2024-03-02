@@ -46,6 +46,7 @@ impl Main {
 
         player.bind_mut().start(start_position.get_position());
         start_timer.start();
+        player.bind_mut().base_mut().set_process(false);
 
         let mut hud = self.base().get_node_as::<Hud>("Hud");
         let hud = hud.bind_mut();
