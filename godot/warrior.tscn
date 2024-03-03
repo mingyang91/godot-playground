@@ -381,15 +381,20 @@ animations = [{
 "speed": 10.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_xeg2r"]
-size = Vector2(26, 72)
+[sub_resource type="CircleShape2D" id="CircleShape2D_apiiq"]
 
 [node name="Warrior" type="Warrior"]
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -28)
 sprite_frames = SubResource("SpriteFrames_ea7l4")
-animation = &"right_walk"
-frame_progress = 0.749921
+animation = &"right_attack_2"
+frame = 5
+frame_progress = 1.0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+rotation = 1.5708
+shape = SubResource("CircleShape2D_apiiq")
 
 [node name="Debug" type="Label" parent="."]
 offset_left = -34.0
@@ -398,8 +403,5 @@ offset_right = 35.0
 offset_bottom = 65.0
 text = "<Debug>"
 autowrap_mode = 1
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_xeg2r")
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="on_animation_finished"]

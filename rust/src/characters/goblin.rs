@@ -1,5 +1,5 @@
 use std::cell::OnceCell;
-use godot::engine::{AnimatedSprite2D, CharacterBody2D, ICharacterBody2D, Label};
+use godot::engine::{AnimatedSprite2D, AnimationPlayer, CharacterBody2D, ICharacterBody2D, Label, Sprite2D};
 use godot::prelude::*;
 use crate::characters::common::{Action, AttackCoolDown, FaceDirection};
 
@@ -7,7 +7,6 @@ use crate::characters::common::{Action, AttackCoolDown, FaceDirection};
 struct State {
 	hp: i32,
 	action: Action,
-	face_direction: FaceDirection,
 	attack_cool_down: AttackCoolDown,
 }
 
@@ -19,7 +18,7 @@ pub struct Goblin {
 	#[var]
 	speed: real,
 	state: State,
-	animated_sprite2d: OnceCell<Gd<AnimatedSprite2D>>,
+	animation_player: OnceCell<Gd<AnimationPlayer>>,
 	base: Base<CharacterBody2D>,
 }
 
@@ -27,7 +26,8 @@ pub struct Goblin {
 #[godot_api]
 impl Goblin {
 	#[func]
-	fn on_animation_finished(&mut self) {
+	fn on_animation_finished(&mut self, animation_name: StringName) {
+		tracing::info!("animation finished: {:?}", animation_name);
 		match self.state.action {
 			Action::Attack => self.transition_to_idle(),
 			Action::Die => {}
@@ -35,97 +35,66 @@ impl Goblin {
 		}
 	}
 
-	fn get_animated_sprite2d(&self) -> &Gd<AnimatedSprite2D> {
-		self.animated_sprite2d.get().expect("AnimatedSprite2D is not initialized")
+	fn get_animation_player(&self) -> &Gd<AnimationPlayer> {
+		self.animation_player.get().expect("AnimatedSprite2D is not initialized")
 	}
 
-	fn get_animated_sprite2d_mut(&mut self) -> &mut Gd<AnimatedSprite2D> {
-		self.animated_sprite2d.get_mut().expect("AnimatedSprite2D is not initialized")
+	fn get_animation_player_mut(&mut self) -> &mut Gd<AnimationPlayer> {
+		self.animation_player.get_mut().expect("AnimatedSprite2D is not initialized")
+	}
+
+	fn turn_left(&mut self) {
+		self.base_mut()
+			.get_node_as::<Sprite2D>("Sprite2D")
+			.set_scale(Vector2::new(-1.0, 1.0));
+	}
+
+	fn turn_right(&mut self) {
+		self.base_mut()
+			.get_node_as::<Sprite2D>("Sprite2D")
+			.set_scale(Vector2::new(1.0, 1.0));
 	}
 
 	fn transition_to_idle(&mut self) {
 		self.state.action = Action::Idle;
-		match self.state.face_direction {
-			FaceDirection::Left => self.left_idle(),
-			FaceDirection::Right => self.right_idle(),
-		}
+		self.idle();
 	}
 
 	fn transition_to_walk(&mut self) {
 		self.state.action = Action::Walk;
-		match self.state.face_direction {
-			FaceDirection::Left => self.left_walk(),
-			FaceDirection::Right => self.right_walk(),
-		}
+		self.walk();
 	}
 
-	fn right_idle(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_h(false);
-		self.get_animated_sprite2d_mut()
+	fn idle(&mut self) {
+		self.get_animation_player_mut()
 			.play_ex()
-			.name("right_idle".into())
+			.name("idle".into())
 			.done();
 	}
 
-	fn left_idle(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_h(true);
-		self.get_animated_sprite2d_mut()
+	fn walk(&mut self) {
+		self.get_animation_player_mut()
 			.play_ex()
-			.name("right_idle".into())
+			.name("walk".into())
 			.done();
 	}
 
-	fn right_walk(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_h(false);
-		self.get_animated_sprite2d_mut()
+	fn attack(&mut self) {
+		self.get_animation_player_mut()
 			.play_ex()
-			.name("right_walk".into())
-			.done();
-	}
-
-	fn left_walk(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_h(true);
-		self.get_animated_sprite2d_mut()
-			.play_ex()
-			.name("right_walk".into())
-			.done();
-	}
-
-	fn right_attack(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_h(false);
-		self.get_animated_sprite2d_mut()
-			.play_ex()
-			.name("right_attack".into())
-			.done();
-	}
-
-	fn left_attack(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_h(true);
-		self.get_animated_sprite2d_mut()
-			.play_ex()
-			.name("right_attack".into())
+			.name("attack".into())
 			.done();
 	}
 
 	fn up_attack(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_v(false);
-		self.get_animated_sprite2d_mut()
+		self.get_animation_player_mut()
 			.play_ex()
 			.name("up_attack".into())
 			.done();
 	}
 
 	fn down_attack(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_v(true);
-		self.get_animated_sprite2d_mut()
+		self.get_animation_player_mut()
 			.play_ex()
 			.name("down_attack".into())
 			.done();
@@ -141,19 +110,18 @@ impl ICharacterBody2D for Goblin {
 			state: State {
 				hp: 100,
 				action: Action::Idle,
-				face_direction: FaceDirection::Right,
 				attack_cool_down: AttackCoolDown::new(1.0),
 			},
-			animated_sprite2d: OnceCell::new(),
+			animation_player: OnceCell::new(),
 			base,
 		}
 	}
 
 	fn ready(&mut self) {
 		let mut anime = self.base_mut()
-			.get_node_as::<AnimatedSprite2D>("AnimatedSprite2D");
+			.get_node_as::<AnimationPlayer>("AnimationPlayer");
 		anime.play();
-		self.animated_sprite2d.set(anime).expect("AnimatedSprite2D is already initialized");
+		self.animation_player.set(anime).expect("AnimationPlayer is already initialized");
 	}
 
 	fn process(&mut self, delta: f64) {
@@ -184,10 +152,7 @@ impl InputAction for Goblin {
 		if self.state.attack_cool_down.ready() {
 			self.state.attack_cool_down.reset();
 			self.state.action = Action::Attack;
-			match self.state.face_direction {
-				FaceDirection::Left => self.left_attack(),
-				FaceDirection::Right => self.right_attack(),
-			}
+			self.attack();
 		}
 	}
 
@@ -202,11 +167,11 @@ impl InputAction for Goblin {
 		} else {
 			let mut velocity = Vector2::ZERO;
 			if input.is_action_pressed("move_right".into()) {
-				self.state.face_direction = FaceDirection::Right;
+				self.turn_right();
 				velocity += Vector2::RIGHT;
 			}
 			if input.is_action_pressed("move_left".into()) {
-				self.state.face_direction = FaceDirection::Left;
+				self.turn_left();
 				velocity += Vector2::LEFT;
 			}
 			if input.is_action_pressed("move_down".into()) {
