@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://cyfwty2q3rdse"]
+[gd_scene load_steps=9 format=3 uid="uid://cyfwty2q3rdse"]
 
 [ext_resource type="PackedScene" uid="uid://4vwrqjegqwpj" path="res://Player.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://ccqoreueuxdb7" path="res://Hud.tscn" id="4"]
@@ -6,6 +6,7 @@
 [ext_resource type="PackedScene" uid="uid://dacmf10lwu6kx" path="res://goblin.tscn" id="5_trt25"]
 [ext_resource type="AudioStream" uid="uid://b38wkhk4ll6d6" path="res://art/gameover.wav" id="6"]
 [ext_resource type="TileSet" uid="uid://dakr7evx8vuhp" path="res://ground.tres" id="6_eun0i"]
+[ext_resource type="PackedScene" uid="uid://cx038x7jvlats" path="res://Warrior.tscn" id="7_utoxq"]
 
 [sub_resource type="Curve2D" id="1"]
 _data = {
@@ -63,6 +64,9 @@ stream = ExtResource("6")
 [node name="Goblin" parent="." instance=ExtResource("5_trt25")]
 position = Vector2(393, 232)
 platform_on_leave = 2
+
+[node name="Warrior" parent="." instance=ExtResource("7_utoxq")]
+position = Vector2(796, 244)
 
 [connection signal="timeout" from="MobTimer" to="." method="on_mob_timer_timeout"]
 [connection signal="timeout" from="ScoreTimer" to="." method="on_score_timer_timeout"]
