@@ -1,6 +1,6 @@
-use crate::ability::Ability;
-use crate::alignment::{Alignment, Ethical, Moral};
-use crate::enums::{Proficiencies, ShieldType, WeaponType};
+use crate::dnd::ability::Ability;
+use crate::dnd::alignment::{Alignment, Ethical, Moral};
+use crate::dnd::enums::{Proficiencies, ShieldType, WeaponType};
 
 #[derive(Debug, Clone)]
 struct CharacterClass {

@@ -1,28 +1,7 @@
 use std::cell::OnceCell;
-use godot::engine::{AnimatedSprite2D, CharacterBody2D, ICharacterBody2D, Label, Timer};
+use godot::engine::{AnimatedSprite2D, CharacterBody2D, ICharacterBody2D, Label};
 use godot::prelude::*;
-
-#[derive(Debug)]
-enum MoveDirection {
-	Left,
-	Right,
-	Up,
-	Down,
-}
-
-#[derive(Debug)]
-enum FaceDirection {
-	Left,
-	Right,
-}
-
-#[derive(Debug)]
-enum Action {
-	Idle,
-	Walk,
-	Attack,
-	Die,
-}
+use crate::characters::common::{Action, AttackCoolDown, FaceDirection};
 
 #[derive(Debug)]
 struct State {
@@ -30,33 +9,6 @@ struct State {
 	action: Action,
 	face_direction: FaceDirection,
 	attack_cool_down: AttackCoolDown,
-}
-
-#[derive(Debug)]
-struct AttackCoolDown {
-	time: f64,
-	elapsed: f64,
-}
-
-impl AttackCoolDown {
-	fn new(time: f64) -> Self {
-		AttackCoolDown {
-			time,
-			elapsed: 0.0,
-		}
-	}
-
-	fn update(&mut self, delta: f64) {
-		self.elapsed += delta;
-	}
-
-	fn reset(&mut self) {
-		self.elapsed = 0.0;
-	}
-
-	fn ready(&self) -> bool {
-		self.elapsed >= self.time
-	}
 }
 
 #[derive(GodotClass)]

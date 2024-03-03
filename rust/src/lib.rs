@@ -14,15 +14,11 @@ mod hud;
 mod main_scene;
 mod mob;
 mod player;
-mod goblin;
+mod characters;
 mod logger;
 mod bullet;
 pub mod pool;
-mod footman;
-mod alignment;
-
-mod enums;
-mod ability;
+mod dnd;
 
 struct DodgeTheCreeps;
 
