@@ -26,12 +26,14 @@ pub struct Goblin {
 #[godot_api]
 impl Goblin {
 	#[func]
-	fn on_animation_finished(&mut self, animation_name: StringName) {
-		tracing::info!("animation finished: {:?}", animation_name);
-		match self.state.action {
-			Action::Attack => self.transition_to_idle(),
-			Action::Die => {}
-			_ => {}
+	fn on_animation_changed(&mut self, old_name: Variant, _new_name: Variant) {
+		tracing::info!("animation finished: {:?}", old_name);
+		if old_name.to::<String>() == "attack" {
+			match self.state.action {
+				Action::Attack => self.transition_to_idle(),
+				Action::Die => {}
+				_ => {}
+			}
 		}
 	}
 
@@ -80,7 +82,9 @@ impl Goblin {
 	}
 
 	fn attack(&mut self) {
-		self.get_animation_player_mut()
+		let a = self.get_animation_player_mut()
+			.animation_set_next("attack".into(), "idle".into());
+		self.get_animation_player_mut()//.play();
 			.play_ex()
 			.name("attack".into())
 			.done();
@@ -120,7 +124,7 @@ impl ICharacterBody2D for Goblin {
 	fn ready(&mut self) {
 		let mut anime = self.base_mut()
 			.get_node_as::<AnimationPlayer>("AnimationPlayer");
-		anime.play();
+		anime.play_ex().name("idle".into()).done();
 		self.animation_player.set(anime).expect("AnimationPlayer is already initialized");
 	}
 

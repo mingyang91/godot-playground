@@ -27,7 +27,6 @@ impl Mob {
 #[godot_api]
 impl IRigidBody2D for Mob {
     fn init(base: Base<RigidBody2D>) -> Self {
-        tracing::error!("Mob thread: {:?}", std::thread::current().id());
         Mob {
             min_speed: 150.0,
             max_speed: 250.0,

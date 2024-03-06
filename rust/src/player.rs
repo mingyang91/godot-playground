@@ -119,7 +119,6 @@ impl Player {
 #[godot_api]
 impl IArea2D for Player {
     fn init(base: Base<Area2D>) -> Self {
-        tracing::error!("Player thread: {:?}", std::thread::current().id());
         let gun_nums = 4;
         let mut floating_guns_1: Vec<_> = (0..gun_nums)
             .map(|i| FloatingGun::new(0.1, 1.0, (PI as f64 * 2.0 / gun_nums as f64) * i as f64))
@@ -145,7 +144,6 @@ impl IArea2D for Player {
         let bullet_scene = load::<PackedScene>("res://Bullet.tscn");
         let base = self.base().clone();
         let pool = GdPool::new(10, || {
-            tracing::debug!("Instantiate bullet");
             let bullet = bullet_scene.instantiate_as::<Bullet>();
             let Some(mut parent) = base.get_parent() else {
                 tracing::error!("Failed to get parent of bullet");

@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://dacmf10lwu6kx"]
+[gd_scene load_steps=8 format=3 uid="uid://dacmf10lwu6kx"]
 
 [ext_resource type="Texture2D" uid="uid://dxveyt2g3dmeb" path="res://Torch_Yellow.png" id="1_jvodi"]
 
@@ -6,34 +6,6 @@
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8q46r"]
 size = Vector2(65, 20)
-
-[sub_resource type="Animation" id="Animation_p225j"]
-length = 0.001
-loop_mode = 2
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Sprite2D/HitBox/CollisionShape2D:disabled")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [false]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Sprite2D:frame")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0),
-"transitions": PackedFloat32Array(1),
-"update": 1,
-"values": [7]
-}
 
 [sub_resource type="Animation" id="Animation_5fw2s"]
 resource_name = "attack"
@@ -100,7 +72,6 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_dmdjw"]
 _data = {
-"RESET": SubResource("Animation_p225j"),
 "attack": SubResource("Animation_5fw2s"),
 "idle": SubResource("Animation_yjuor"),
 "walk": SubResource("Animation_okbi6")
@@ -126,7 +97,7 @@ position = Vector2(0, -31)
 texture = ExtResource("1_jvodi")
 hframes = 7
 vframes = 5
-frame = 7
+frame = 14
 region_rect = Rect2(0, 0, 192, 192)
 
 [node name="HitBox" type="Area2D" parent="Sprite2D"]
@@ -135,11 +106,13 @@ position = Vector2(0, 31)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/HitBox"]
 position = Vector2(43.5, 0)
 shape = SubResource("RectangleShape2D_8q46r")
+disabled = true
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
 "": SubResource("AnimationLibrary_dmdjw")
 }
+autoplay = "idle"
 next/attack = &"attack"
 
-[connection signal="animation_finished" from="AnimationPlayer" to="." method="on_animation_finished"]
+[connection signal="animation_changed" from="AnimationPlayer" to="." method="on_animation_changed"]
