@@ -19,6 +19,8 @@ mod logger;
 mod bullet;
 pub mod pool;
 mod dnd;
+mod ai;
+mod interactable;
 
 struct DodgeTheCreeps;
 

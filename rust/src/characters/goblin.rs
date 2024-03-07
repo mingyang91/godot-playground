@@ -1,7 +1,7 @@
 use std::cell::OnceCell;
-use godot::engine::{AnimatedSprite2D, AnimationPlayer, CharacterBody2D, ICharacterBody2D, Label, Sprite2D};
+use godot::engine::{AnimationPlayer, CharacterBody2D, ICharacterBody2D, Label, Sprite2D};
 use godot::prelude::*;
-use crate::characters::common::{Action, AttackCoolDown, FaceDirection};
+use crate::characters::common::{Action, AttackCoolDown};
 
 #[derive(Debug)]
 struct State {
@@ -27,7 +27,6 @@ pub struct Goblin {
 impl Goblin {
 	#[func]
 	fn on_animation_changed(&mut self, old_name: Variant, _new_name: Variant) {
-		tracing::info!("animation finished: {:?}", old_name);
 		if old_name.to::<String>() == "attack" {
 			match self.state.action {
 				Action::Attack => self.transition_to_idle(),
@@ -82,7 +81,7 @@ impl Goblin {
 	}
 
 	fn attack(&mut self) {
-		let a = self.get_animation_player_mut()
+		self.get_animation_player_mut()
 			.animation_set_next("attack".into(), "idle".into());
 		self.get_animation_player_mut()//.play();
 			.play_ex()

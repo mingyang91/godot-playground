@@ -1,0 +1,91 @@
+[gd_scene load_steps=11 format=3 uid="uid://c5aou3yuml1fq"]
+
+[ext_resource type="Texture2D" uid="uid://cgmh77apv27rt" path="res://Tree.png" id="1_wp6px"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5q145"]
+atlas = ExtResource("1_wp6px")
+region = Rect2(0, 192, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_n1fqq"]
+atlas = ExtResource("1_wp6px")
+region = Rect2(192, 192, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_loefr"]
+atlas = ExtResource("1_wp6px")
+region = Rect2(0, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_oifu6"]
+atlas = ExtResource("1_wp6px")
+region = Rect2(192, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0y4yp"]
+atlas = ExtResource("1_wp6px")
+region = Rect2(384, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_idldx"]
+atlas = ExtResource("1_wp6px")
+region = Rect2(576, 0, 192, 192)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nklis"]
+atlas = ExtResource("1_wp6px")
+region = Rect2(0, 384, 192, 192)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_evrgv"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5q145")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_n1fqq")
+}],
+"loop": true,
+"name": &"chopping",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_loefr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_oifu6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0y4yp")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_idldx")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nklis")
+}],
+"loop": true,
+"name": &"stump",
+"speed": 5.0
+}]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_l5t2f"]
+
+[node name="Tree" type="PineTree"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -66)
+sprite_frames = SubResource("SpriteFrames_evrgv")
+animation = &"idle"
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
+shape = SubResource("CircleShape2D_l5t2f")
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_l5t2f")
+
+[connection signal="body_entered" from="Area2D" to="." method="on_body_entered"]

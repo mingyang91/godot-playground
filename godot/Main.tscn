@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=3 uid="uid://cyfwty2q3rdse"]
+[gd_scene load_steps=10 format=3 uid="uid://cyfwty2q3rdse"]
 
 [ext_resource type="PackedScene" uid="uid://4vwrqjegqwpj" path="res://Player.tscn" id="3"]
 [ext_resource type="PackedScene" uid="uid://ccqoreueuxdb7" path="res://Hud.tscn" id="4"]
@@ -7,6 +7,7 @@
 [ext_resource type="AudioStream" uid="uid://b38wkhk4ll6d6" path="res://art/gameover.wav" id="6"]
 [ext_resource type="TileSet" uid="uid://dakr7evx8vuhp" path="res://ground.tres" id="6_eun0i"]
 [ext_resource type="PackedScene" uid="uid://cx038x7jvlats" path="res://Warrior.tscn" id="7_utoxq"]
+[ext_resource type="PackedScene" uid="uid://c5aou3yuml1fq" path="res://tree.tscn" id="8_sju3t"]
 
 [sub_resource type="Curve2D" id="1"]
 _data = {
@@ -67,6 +68,9 @@ platform_on_leave = 2
 
 [node name="Warrior" parent="." instance=ExtResource("7_utoxq")]
 position = Vector2(796, 244)
+
+[node name="Tree" parent="." instance=ExtResource("8_sju3t")]
+position = Vector2(537, 229)
 
 [connection signal="timeout" from="MobTimer" to="." method="on_mob_timer_timeout"]
 [connection signal="timeout" from="ScoreTimer" to="." method="on_score_timer_timeout"]
