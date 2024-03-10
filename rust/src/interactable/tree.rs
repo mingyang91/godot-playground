@@ -2,7 +2,7 @@ use godot::engine::Area2D;
 use godot::prelude::*;
 use crate::characters::goblin::Goblin;
 use crate::dnd::enums::WeaponType;
-use crate::interactable::{InteractWith};
+use crate::interactable::{InteractWith, MaybeImplInteractWith};
 use crate::tools::weapon::Weapon;
 
 enum State {
@@ -25,9 +25,11 @@ impl PineTree {
     #[func]
     fn on_body_entered(&mut self, body: Gd<Node2D>) {
         tracing::info!("body entered: {:?}", body);
-        let Ok(goblin) = body.try_cast::<Goblin>() else {
-            return
-        };
+
+        match body.get_dyn() {
+            Ok(mut iw) => iw.interact(self),
+            Err(_) => {}
+        }
 
         self.hp -= 1;
         if self.hp <= 0 {

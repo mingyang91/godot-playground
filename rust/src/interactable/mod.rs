@@ -46,17 +46,6 @@ where T: GodotClass + Inherits<Node2D> {
     Err(node)
 }
 
-// pub trait Interactable<F> {
-//     fn interact(&mut self, from: &F);
-// }
-//
-// impl <F, T> Interactable<Gd<F>> for T
-// where F: GodotClass {
-//     fn interact(&mut self, from: &Gd<F>) {
-//         self.interact(from);
-//     }
-// }
-
 trait MaybeImplInteractWith<T>
 where Self: Sized {
     fn get_dyn(self) -> Result<Box<dyn InteractWith<T>>, Self>;
