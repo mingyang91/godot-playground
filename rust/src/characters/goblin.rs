@@ -1,7 +1,15 @@
 use std::cell::OnceCell;
+use std::collections::{HashMap, HashSet};
+use std::sync::Mutex;
+use ctor::ctor;
 use godot::engine::{AnimationPlayer, CharacterBody2D, ICharacterBody2D, Label, Sprite2D};
 use godot::prelude::*;
+use lazy_static::lazy_static;
 use crate::characters::common::{Action, AttackCoolDown};
+use crate::dnd::enums::WeaponType;
+use crate::interactable::{BoxInteractWith, Caster, InteractWith, register};
+use crate::interactable::tree::PineTree;
+use crate::tools::weapon::{SimpleMeleeWeapon, Weapon};
 
 #[derive(Debug)]
 struct State {
@@ -9,6 +17,25 @@ struct State {
 	action: Action,
 	attack_cool_down: AttackCoolDown,
 }
+
+#[derive(Debug)]
+struct Torch {}
+
+impl Weapon for Torch {
+    fn r#type(&self) -> WeaponType {
+        WeaponType::SimpleMelee
+    }
+
+    fn damage(&self) -> u32 {
+        todo!()
+    }
+
+    fn range(&self) -> u32 {
+        todo!()
+    }
+}
+
+impl SimpleMeleeWeapon for Torch {}
 
 #[derive(GodotClass)]
 #[class(base=CharacterBody2D)]
@@ -19,6 +46,7 @@ pub struct Goblin {
 	speed: real,
 	state: State,
 	animation_player: OnceCell<Gd<AnimationPlayer>>,
+    weapon: Torch,
 	base: Base<CharacterBody2D>,
 }
 
@@ -115,6 +143,7 @@ impl ICharacterBody2D for Goblin {
 				action: Action::Idle,
 				attack_cool_down: AttackCoolDown::new(1.0),
 			},
+            weapon: Torch {},
 			animation_player: OnceCell::new(),
 			base,
 		}
@@ -197,4 +226,39 @@ impl InputAction for Goblin {
 			self.base_mut().move_and_slide();
 		}
 	}
+}
+
+lazy_static! {
+    static ref REGISTER: Mutex<HashMap<String, String>> = Mutex::new({
+        let mut m = HashMap::new();
+        m
+    });
+}
+
+#[ctor]
+fn test() {
+    let mut reg = REGISTER.lock().unwrap();
+    reg.insert("Goblin".to_string(), "test".to_string());
+}
+
+impl InteractWith<PineTree> for Goblin {
+    fn interact(&mut self, with: &mut PineTree) {
+        tracing::debug!("Goblin hit PineTree, but nothing happened");
+    }
+}
+
+struct GoblinCaster {}
+
+impl Caster<BoxInteractWith> for GoblinCaster {
+    fn name(&self) -> String { "Goblin".to_string() }
+
+    fn cast(&self, gd: Gd<Node2D>) -> BoxInteractWith {
+        let concrete = gd.cast::<Goblin>();
+        Box::new(concrete)
+    }
+}
+
+#[ctor]
+fn register_goblin() {
+    register("Goblin", GoblinCaster {});
 }

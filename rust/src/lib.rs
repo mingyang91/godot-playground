@@ -1,4 +1,5 @@
 #![feature(fn_traits)]
+#![feature(unboxed_closures)]
 /*
  * Copyright (c) godot-rust; Bromeon and contributors.
  * This Source Code Form is subject to the terms of the Mozilla Public
@@ -18,9 +19,10 @@ mod characters;
 mod logger;
 mod bullet;
 pub mod pool;
-mod dnd;
-mod ai;
-mod interactable;
+pub mod dnd;
+pub mod ai;
+pub mod interactable;
+pub mod tools;
 
 struct DodgeTheCreeps;
 
