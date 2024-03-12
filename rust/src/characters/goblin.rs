@@ -7,7 +7,10 @@ use godot::prelude::*;
 use lazy_static::lazy_static;
 use crate::characters::common::{Action, AttackCoolDown};
 use crate::dnd::enums::WeaponType;
-use crate::interactable::{BoxInteractWith, Caster, InteractWith, register};
+use crate::interactable::{BoxInteractWith, Caster, effect, InteractWith, register};
+use crate::interactable::effect::Damage;
+use crate::interactable::effect::{Effect, Effects};
+use crate::interactable::hit_box::HitBox;
 use crate::interactable::tree::PineTree;
 use crate::tools::weapon::{SimpleMeleeWeapon, Weapon};
 
@@ -15,7 +18,7 @@ use crate::tools::weapon::{SimpleMeleeWeapon, Weapon};
 struct State {
 	hp: i32,
 	action: Action,
-	attack_cool_down: AttackCoolDown,
+    attack_cool_down: AttackCoolDown,
 }
 
 #[derive(Debug)]
@@ -154,6 +157,10 @@ impl ICharacterBody2D for Goblin {
 			.get_node_as::<AnimationPlayer>("AnimationPlayer");
 		anime.play_ex().name("idle".into()).done();
 		self.animation_player.set(anime).expect("AnimationPlayer is already initialized");
+
+        let mut hit_box = self.base_mut().get_node_as::<HitBox>("Sprite2D/HitBox");
+        let effects = Effects::new(vec![Effect::Damage(Damage { amount: 10 })]);
+        hit_box.bind_mut().set_effects(effects);
 	}
 
 	fn process(&mut self, delta: f64) {

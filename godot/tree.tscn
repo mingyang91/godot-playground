@@ -39,7 +39,7 @@ animations = [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_n1fqq")
 }],
-"loop": true,
+"loop": false,
 "name": &"chopping",
 "speed": 5.0
 }, {
@@ -82,10 +82,13 @@ animation = &"idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="StaticBody2D"]
 shape = SubResource("CircleShape2D_l5t2f")
+disabled = true
 
-[node name="Area2D" type="Area2D" parent="."]
+[node name="HurtBox" type="HurtBox" parent="."]
+collision_layer = 0
+collision_mask = 4
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="HurtBox"]
 shape = SubResource("CircleShape2D_l5t2f")
 
-[connection signal="body_entered" from="Area2D" to="." method="on_body_entered"]
+[connection signal="hurt" from="HurtBox" to="." method="hurt"]

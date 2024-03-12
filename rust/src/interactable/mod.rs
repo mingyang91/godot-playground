@@ -1,5 +1,4 @@
 use std::collections::HashMap;
-use std::pin::Pin;
 use std::sync::Mutex;
 use godot::obj::Bounds;
 use godot::obj::bounds::DeclUser;
@@ -9,6 +8,9 @@ use lazy_static::lazy_static;
 use crate::interactable::tree::PineTree;
 
 pub mod tree;
+pub mod hit_box;
+pub mod hurt_box;
+pub mod effect;
 
 
 pub trait Caster<T>

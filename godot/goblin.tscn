@@ -100,8 +100,10 @@ vframes = 5
 frame = 14
 region_rect = Rect2(0, 0, 192, 192)
 
-[node name="HitBox" type="Area2D" parent="Sprite2D"]
+[node name="HitBox" type="HitBox" parent="Sprite2D"]
 position = Vector2(0, 31)
+collision_layer = 4
+collision_mask = 0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Sprite2D/HitBox"]
 position = Vector2(43.5, 0)
@@ -115,4 +117,5 @@ libraries = {
 autoplay = "idle"
 next/attack = &"attack"
 
+[connection signal="body_entered" from="Sprite2D/HitBox" to="Sprite2D/HitBox" method="on_body_entered"]
 [connection signal="animation_changed" from="AnimationPlayer" to="." method="on_animation_changed"]
