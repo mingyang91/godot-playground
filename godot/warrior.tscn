@@ -1,4 +1,4 @@
-[gd_scene load_steps=52 format=3 uid="uid://cx038x7jvlats"]
+[gd_scene load_steps=53 format=3 uid="uid://cx038x7jvlats"]
 
 [ext_resource type="Texture2D" uid="uid://beyltuic47x2t" path="res://Warrior_Blue.png" id="1_wcv2s"]
 
@@ -383,7 +383,11 @@ animations = [{
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_apiiq"]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_fmbxc"]
+
 [node name="Warrior" type="Warrior"]
+collision_layer = 2
+collision_mask = 3
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 position = Vector2(0, -28)
@@ -403,5 +407,12 @@ offset_right = 35.0
 offset_bottom = 65.0
 text = "<Debug>"
 autowrap_mode = 1
+
+[node name="VisiableBody" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="VisiableBody"]
+shape = SubResource("CircleShape2D_fmbxc")
 
 [connection signal="animation_finished" from="AnimatedSprite2D" to="." method="on_animation_finished"]

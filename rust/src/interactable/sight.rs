@@ -14,7 +14,7 @@ impl SightArea2D {
 
     #[func]
     fn on_area_entered(&mut self, body: Gd<Area2D>) {
-        self.base_mut().emit_signal("player_in_sight".into(), &[body.to_variant()]);
+        self.base_mut().emit_signal("character_in_sight".into(), &[body.to_variant()]);
     }
 }
 

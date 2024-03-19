@@ -68,7 +68,6 @@ impl Goblin {
 		let Some(owner) = body.get_owner() else {
 			return
 		};
-		tracing::debug!("owner: {:?}", owner);
 		// TODO: send to AI to decide what to do
 	}
 
