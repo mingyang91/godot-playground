@@ -1,6 +1,4 @@
 use crate::dnd::enums::WeaponType;
-use crate::interactable::InteractWith;
-use crate::interactable::tree::PineTree;
 
 pub trait Weapon {
     fn r#type(&self) -> WeaponType;

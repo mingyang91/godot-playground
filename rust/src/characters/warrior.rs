@@ -1,7 +1,6 @@
 use std::cell::OnceCell;
 use godot::engine::{AnimatedSprite2D, CharacterBody2D, ICharacterBody2D, Label};
 use godot::prelude::*;
-use godot::prelude::utilities::randi_range;
 use rand::Rng;
 use crate::characters::common::{Action, AttackCoolDown, FaceDirection};
 

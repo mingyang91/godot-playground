@@ -1,11 +1,7 @@
-use godot::engine::{AnimatedSprite2D, Area2D};
+use godot::engine::{AnimatedSprite2D};
 use godot::prelude::*;
-use crate::characters::goblin::Goblin;
-use crate::dnd::enums::WeaponType;
-use crate::interactable::{InteractWith, MaybeImplInteractWith};
-use crate::interactable::effect::{Damage, Effect, Effects};
+use crate::interactable::effect::{Effect, Effects};
 use crate::interactable::hurt_box::HurtBox;
-use crate::tools::weapon::Weapon;
 
 enum State {
     Idle,
@@ -47,11 +43,6 @@ impl PineTree {
             self.sprite.as_mut().expect("must have").play_ex().name("chopping".into()).done();
         }
     }
-
-    fn transition_to_idle(&mut self) {
-        let mut sprite = self.base_mut().get_node_as::<AnimatedSprite2D>("AnimatedSprite2D");
-        sprite.play_ex().name("idle".into()).done();
-    }
 }
 
 #[godot_api]
@@ -69,7 +60,7 @@ impl INode2D for PineTree {
     fn ready(&mut self) {
         self.state = State::Idle;
 
-        let mut base = self.base_mut();
+        let base = self.base_mut();
         let hurt_box = base.get_node_as::<HurtBox>("HurtBox");
         let mut sprite = base.get_node_as::<AnimatedSprite2D>("AnimatedSprite2D");
         sprite.play();
@@ -81,18 +72,3 @@ impl INode2D for PineTree {
     }
 }
 
-
-impl <W: Weapon> InteractWith<PineTree> for W {
-    fn interact(&mut self, with: &mut PineTree) {
-        let hp = match self.r#type() {
-            WeaponType::SimpleMelee => 1,
-            WeaponType::SimpleRanged => 0,
-            WeaponType::MartialMelee => 2,
-            WeaponType::MartialRanged => 0,
-        };
-        with.hp -= hp;
-        if with.hp <= 0 {
-            with.state = State::Stump;
-        }
-    }
-}

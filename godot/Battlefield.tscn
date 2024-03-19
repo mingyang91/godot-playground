@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=3 uid="uid://dyhefsi0anso6"]
 
-[ext_resource type="TileSet" uid="uid://dakr7evx8vuhp" path="res://ground.tres" id="1_r6rjv"]
+[ext_resource type="TileSet" uid="uid://dakr7evx8vuhp" path="res://tilemaps/ground.tres" id="1_r6rjv"]
 
 [node name="Battlefield" type="Node2D"]
 

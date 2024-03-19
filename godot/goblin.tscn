@@ -1,4 +1,4 @@
-[gd_scene load_steps=8 format=3 uid="uid://dacmf10lwu6kx"]
+[gd_scene load_steps=9 format=3 uid="uid://dacmf10lwu6kx"]
 
 [ext_resource type="Texture2D" uid="uid://dxveyt2g3dmeb" path="res://Torch_Yellow.png" id="1_jvodi"]
 
@@ -77,7 +77,12 @@ _data = {
 "walk": SubResource("Animation_okbi6")
 }
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_7g357"]
+radius = 600.0
+
 [node name="Goblin" type="Goblin"]
+collision_layer = 2
+collision_mask = 3
 platform_floor_layers = 4278190081
 platform_wall_layers = 1
 
@@ -117,5 +122,13 @@ libraries = {
 autoplay = "idle"
 next/attack = &"attack"
 
+[node name="Area2D" type="SightArea2D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_7g357")
+
 [connection signal="body_entered" from="Sprite2D/HitBox" to="Sprite2D/HitBox" method="on_body_entered"]
 [connection signal="animation_changed" from="AnimationPlayer" to="." method="on_animation_changed"]
+[connection signal="character_in_sight" from="Area2D" to="." method="on_enemy_entered"]

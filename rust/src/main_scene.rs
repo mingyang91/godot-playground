@@ -1,12 +1,11 @@
+use std::f32::consts::PI;
+
+use godot::engine::{PathFollow2D, RigidBody2D, Timer};
+use godot::prelude::*;
+use rand::Rng as _;
+
 use crate::hud::Hud;
 use crate::mob;
-use crate::player;
-
-use godot::engine::{Marker2D, PathFollow2D, RigidBody2D, Timer};
-use godot::prelude::*;
-
-use rand::Rng as _;
-use std::f32::consts::PI;
 
 // Deriving GodotClass makes the class available to Godot
 #[derive(GodotClass)]
@@ -38,15 +37,7 @@ impl Main {
 
     #[func]
     pub fn new_game(&mut self) {
-        let start_position = self.base().get_node_as::<Marker2D>("StartPosition");
-        let mut player = self.base().get_node_as::<player::Player>("Player");
-        let mut start_timer = self.base().get_node_as::<Timer>("StartTimer");
-
         self.score = 0;
-
-        player.bind_mut().start(start_position.get_position());
-        start_timer.start();
-        player.bind_mut().base_mut().set_process(false);
 
         let mut hud = self.base().get_node_as::<Hud>("Hud");
         let hud = hud.bind_mut();

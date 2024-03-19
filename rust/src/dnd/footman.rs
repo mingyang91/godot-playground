@@ -149,7 +149,7 @@ impl HumanWarrior {
 
 #[cfg(test)]
 mod test {
-    use crate::enums::{AbilityType, ArmorType, ShieldType, SkillType, WeaponType};
+    use crate::dnd::enums::{AbilityType, ArmorType, ShieldType, SkillType, WeaponType};
 
     #[test]
     fn test_human_warrior() {
