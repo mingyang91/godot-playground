@@ -19,6 +19,9 @@ object-pool = "0.5.4"
 bitflags = "2.4.2"
 lazy_static = "1.4.0"
 ctor = "0.2.7"
+tokio = { version = "1.36.0", features = ["rt-multi-thread", "sync", "time", "macros", "rt"] }
+actix = "0.13.3"
+actix-rt = "2.9.0"
 
 [dependencies.godot]
 git = "https://github.com/godot-rust/gdext.git"
