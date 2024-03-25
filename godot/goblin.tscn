@@ -122,15 +122,19 @@ libraries = {
 autoplay = "idle"
 next/attack = &"attack"
 
-[node name="Area2D" type="SightArea2D" parent="."]
+[node name="SightArea2D" type="SightArea2D" parent="."]
 collision_layer = 0
 collision_mask = 2
 
-[node name="Timer" type="Timer" parent="Area2D"]
+[node name="Timer" type="Timer" parent="SightArea2D"]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="SightArea2D"]
 shape = SubResource("CircleShape2D_7g357")
+
+[node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
+target_desired_distance = 100.0
+avoidance_enabled = true
+debug_enabled = true
 
 [connection signal="body_entered" from="Sprite2D/HitBox" to="Sprite2D/HitBox" method="on_body_entered"]
 [connection signal="animation_changed" from="AnimationPlayer" to="." method="on_animation_changed"]
-[connection signal="character_in_sight" from="Area2D" to="." method="on_enemy_entered"]

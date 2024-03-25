@@ -1,6 +1,6 @@
 use std::cell::OnceCell;
 
-use godot::engine::{AnimationPlayer, Area2D, CharacterBody2D, ICharacterBody2D, Label, Sprite2D};
+use godot::engine::{AnimationPlayer, Area2D, CharacterBody2D, ICharacterBody2D, Label, NavigationAgent2D, NavigationServer2D, Sprite2D};
 use godot::prelude::*;
 
 use crate::characters::common::{Action, AttackCoolDown};
@@ -8,6 +8,8 @@ use crate::dnd::enums::WeaponType;
 use crate::interactable::effect::{Effect, Effects};
 use crate::interactable::effect::Damage;
 use crate::interactable::hit_box::HitBox;
+use crate::interactable::navigator::Navigator;
+use crate::interactable::sight::SightArea2D;
 use crate::tools::weapon::{SimpleMeleeWeapon, Weapon};
 
 #[derive(Debug)]
@@ -45,6 +47,7 @@ pub struct Goblin {
 	speed: real,
 	state: State,
 	animation_player: OnceCell<Gd<AnimationPlayer>>,
+	navigator: OnceCell<Navigator>,
     weapon: Torch,
 	base: Base<CharacterBody2D>,
 }
@@ -68,7 +71,22 @@ impl Goblin {
 		let Some(owner) = body.get_owner() else {
 			return
 		};
+		tracing::debug!("enemy entered: {:?}", owner);
+		if !self.get_navigator_mut().is_following() {
+			self.get_navigator_mut().follow(owner.cast());
+		}
 		// TODO: send to AI to decide what to do
+	}
+
+	#[func]
+	fn on_enemy_exited(&mut self, body: Gd<Area2D>) {
+		let Some(owner) = body.get_owner() else {
+			return
+		};
+		tracing::debug!("enemy exited: {:?}", owner);
+		if self.get_navigator_mut().get_target() == Some(owner.cast()) {
+			self.get_navigator_mut().stop_following();
+		}
 	}
 
 	fn get_animation_player(&self) -> &Gd<AnimationPlayer> {
@@ -77,6 +95,14 @@ impl Goblin {
 
 	fn get_animation_player_mut(&mut self) -> &mut Gd<AnimationPlayer> {
 		self.animation_player.get_mut().expect("AnimatedSprite2D is not initialized")
+	}
+
+	fn get_navigator(&self) -> &Navigator {
+		self.navigator.get().expect("Navigator is not initialized")
+	}
+
+	fn get_navigator_mut(&mut self) -> &mut Navigator {
+		self.navigator.get_mut().expect("Navigator is not initialized")
 	}
 
 	fn turn_left(&mut self) {
@@ -152,15 +178,22 @@ impl ICharacterBody2D for Goblin {
 			},
             weapon: Torch {},
 			animation_player: OnceCell::new(),
+			navigator: OnceCell::new(),
 			base,
 		}
 	}
 
 	fn ready(&mut self) {
+		self.base().get_world_2d();
 		let mut anime = self.base_mut()
 			.get_node_as::<AnimationPlayer>("AnimationPlayer");
 		anime.play_ex().name("idle".into()).done();
-		self.animation_player.set(anime).expect("AnimationPlayer is already initialized");
+		self.animation_player.set(anime)
+			.expect("AnimationPlayer is already initialized");
+		let navigation_agent = self.base_mut()
+			.get_node_as::<NavigationAgent2D>("NavigationAgent2D");
+		self.navigator.set(Navigator::new(navigation_agent))
+			.expect("NavigationAgent2D is already initialized");
 
         let mut hit_box = self.base_mut().get_node_as::<HitBox>("Sprite2D/HitBox");
         let effects = Effects::new(vec![Effect::Damage(Damage { amount: 10 })]);
@@ -169,9 +202,49 @@ impl ICharacterBody2D for Goblin {
 
 	fn process(&mut self, delta: f64) {
 		self.state.attack_cool_down.update(delta);
-		let mut debug = self.base().get_node_as::<Label>("Debug");
-		debug.set_text(format!("state: {:?}", self.state).into());
 		// self.process_input()
+		let sight = self.base_mut().get_node_as::<SightArea2D>("SightArea2D");
+		if !self.get_navigator().is_following() {
+			for area in sight.get_overlapping_areas().iter_shared() {
+				let Some(owner) = area.get_owner() else {
+					tracing::debug!("Dangling node: {:?}", area);
+					continue
+				};
+				tracing::debug!("insight: {:?}", owner);
+				self.get_navigator_mut().follow(owner.cast());
+				break
+			}
+		} else if !sight.has_overlapping_areas() {
+			self.get_navigator_mut().stop_following();
+			tracing::debug!("lost sight");
+		}
+
+		if !self.get_navigator().is_target_reached() {
+			let self_pos = self.base().get_global_position();
+			let next_pos = self.get_navigator_mut().get_next_position();
+			let direction = next_pos - self_pos;
+			if rand::random::<f32>() > 0.90 {
+				tracing::debug!("current {:?} walk to {:?}, through {:?}", self_pos, next_pos, direction);
+			}
+			if direction.length() > 0.0 {
+				let speed = self.speed;
+				self.state.action = Action::Walk;
+				self.transition_to_walk();
+				self.base_mut().set_velocity(direction.normalized() * speed);
+				self.base_mut().move_and_slide();
+			} else {
+				self.state.action = Action::Idle;
+				self.transition_to_idle();
+				self.base_mut().set_velocity(Vector2::ZERO);
+			}
+		} else {
+			self.state.action = Action::Idle;
+			self.transition_to_idle();
+			self.base_mut().set_velocity(Vector2::ZERO);
+		}
+
+		let mut debug = self.base().get_node_as::<Label>("Debug");
+		debug.set_text(format!("follow: {:?}, state: {:?}", self.navigator, self.state).into());
 	}
 }
 

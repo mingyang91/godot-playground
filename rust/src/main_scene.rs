@@ -1,6 +1,6 @@
 use std::f32::consts::PI;
 
-use godot::engine::{PathFollow2D, RigidBody2D, Timer};
+use godot::engine::{NavigationServer2D, PathFollow2D, RigidBody2D, Timer};
 use godot::prelude::*;
 use rand::Rng as _;
 
