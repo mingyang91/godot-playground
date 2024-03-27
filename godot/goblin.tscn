@@ -1,4 +1,4 @@
-[gd_scene load_steps=39 format=3 uid="uid://dacmf10lwu6kx"]
+[gd_scene load_steps=42 format=3 uid="uid://dacmf10lwu6kx"]
 
 [ext_resource type="Texture2D" uid="uid://bs7suw0obdgf0" path="res://Tiny Swords/Factions/Knights/Troops/Dead/Dead.png" id="1_gy7l4"]
 [ext_resource type="Texture2D" uid="uid://covlvwrgfcviy" path="res://Tiny Swords/Factions/Goblins/Troops/Torch/Yellow/Torch_Yellow.png" id="2_3u0p8"]
@@ -155,6 +155,17 @@ tracks/1/keys = {
 "transitions": PackedFloat32Array(1, 1, 1),
 "update": 0,
 "values": [true, false, true]
+}
+tracks/2/type = "method"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath(".")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(),
+"transitions": PackedFloat32Array(),
+"values": []
 }
 
 [sub_resource type="Animation" id="Animation_u18br"]
@@ -509,39 +520,45 @@ advance_mode = 2
 advance_mode = 2
 advance_expression = "action == \"Idle\""
 
+[sub_resource type="GDScript" id="GDScript_v5ims"]
+
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_w7hs2"]
-advance_mode = 2
 advance_expression = "action == \"Walk\""
+script = SubResource("GDScript_v5ims")
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_ye7sv"]
-advance_mode = 2
 advance_expression = "action == \"Idle\""
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_fr2hy"]
-advance_mode = 2
 advance_expression = "action == \"Attack\""
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_fcbfs"]
 switch_mode = 2
-advance_mode = 2
 advance_expression = "action == \"Idle\""
 
 [sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_2231q"]
-advance_mode = 2
 advance_expression = "action == \"Dead\""
 
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_rltk7"]
+advance_expression = "action == \"Attack\""
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_x6sil"]
+switch_mode = 2
+advance_expression = "action == 'Walk'"
+
 [sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_4bklx"]
+allow_transition_to_self = true
 states/End/position = Vector2(827, 100.486)
 states/Start/position = Vector2(200, 100.365)
 states/attack/node = SubResource("AnimationNodeBlendSpace2D_juxaf")
-states/attack/position = Vector2(396.17, 213.636)
+states/attack/position = Vector2(492.67, -28.3657)
 states/dead/node = SubResource("AnimationNodeAnimation_p2ph5")
 states/dead/position = Vector2(625.748, 100.243)
 states/idle/node = SubResource("AnimationNodeBlendSpace1D_pt4r6")
-states/idle/position = Vector2(395.757, 100.615)
+states/idle/position = Vector2(398.757, 101.772)
 states/walk/node = SubResource("AnimationNodeBlendSpace1D_wcchk")
-states/walk/position = Vector2(396.208, -28.0668)
-transitions = ["dead", "End", SubResource("AnimationNodeStateMachineTransition_cs1xi"), "Start", "idle", SubResource("AnimationNodeStateMachineTransition_gbl6f"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_w7hs2"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_ye7sv"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_fr2hy"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_fcbfs"), "idle", "dead", SubResource("AnimationNodeStateMachineTransition_2231q")]
+states/walk/position = Vector2(306.708, -27.7661)
+transitions = ["dead", "End", SubResource("AnimationNodeStateMachineTransition_cs1xi"), "Start", "idle", SubResource("AnimationNodeStateMachineTransition_gbl6f"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_w7hs2"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_ye7sv"), "idle", "attack", SubResource("AnimationNodeStateMachineTransition_fr2hy"), "attack", "idle", SubResource("AnimationNodeStateMachineTransition_fcbfs"), "idle", "dead", SubResource("AnimationNodeStateMachineTransition_2231q"), "walk", "attack", SubResource("AnimationNodeStateMachineTransition_rltk7"), "attack", "walk", SubResource("AnimationNodeStateMachineTransition_x6sil")]
 graph_offset = Vector2(106.015, -110.694)
 
 [node name="Goblin" type="Goblin"]
@@ -609,6 +626,7 @@ disabled = true
 libraries = {
 "": SubResource("AnimationLibrary_dmdjw")
 }
+autoplay = "idle_right"
 
 [node name="NavigationAgent2D" type="NavigationAgent2D" parent="."]
 target_desired_distance = 100.0
@@ -622,7 +640,7 @@ libraries = {
 tree_root = SubResource("AnimationNodeStateMachine_4bklx")
 advance_expression_base_node = NodePath("..")
 anim_player = NodePath("../AnimationPlayer")
-parameters/attack/blend_position = Vector2(1, 1)
+parameters/attack/blend_position = Vector2(2.08165e-12, 2.08165e-12)
 parameters/idle/blend_position = 2.08165e-12
 parameters/walk/blend_position = 2.08165e-12
 

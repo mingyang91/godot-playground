@@ -15,7 +15,6 @@ use crate::tools::weapon::{SimpleMeleeWeapon, Weapon};
 #[derive(Debug)]
 struct State {
 	hp: i32,
-	action: Action,
     attack_cool_down: AttackCoolDown,
 }
 
@@ -59,15 +58,15 @@ pub struct Goblin {
 
 #[godot_api]
 impl Goblin {
+
+	#[func]
+	fn on_attack_end(&mut self) {
+		self.action = Action::Idle;
+	}
+
 	#[func]
 	fn on_animation_changed(&mut self, old_name: Variant, _new_name: Variant) {
-		if old_name.to::<String>() == "attack" {
-			match self.state.action {
-				Action::Attack => self.transition_to_idle(),
-				Action::Die => {}
-				_ => {}
-			}
-		}
+		tracing::debug!("animation changed: {:?} -> {:?}", old_name, _new_name);
 	}
 
 	#[func]
@@ -114,11 +113,11 @@ impl Goblin {
 	}
 
 	fn transition_to_idle(&mut self) {
-		self.state.action = Action::Idle;
+		self.action = Action::Idle;
 	}
 
 	fn transition_to_walk(&mut self) {
-		self.state.action = Action::Walk;
+		self.action = Action::Walk;
 	}
 
 	fn attack(&mut self) {
@@ -144,7 +143,6 @@ impl ICharacterBody2D for Goblin {
 			face_direction_name: FaceDirection::Right.to_string().into(),
 			state: State {
 				hp: 100,
-				action: Action::Idle,
 				attack_cool_down: AttackCoolDown::new(1.0),
 			},
             weapon: Torch {},
@@ -176,35 +174,34 @@ impl ICharacterBody2D for Goblin {
 					tracing::debug!("Dangling node: {:?}", area);
 					continue
 				};
-				tracing::debug!("insight: {:?}", owner);
+				// tracing::debug!("insight: {:?}", owner);
 				self.get_navigator_mut().follow(owner.cast());
 				break
 			}
 		} else if !sight.has_overlapping_areas() {
 			self.get_navigator_mut().stop_following();
-			tracing::debug!("lost sight");
+			// tracing::debug!("lost sight");
 		}
 
 		if !self.get_navigator().is_target_reached() {
 			let self_pos = self.base().get_global_position();
 			let next_pos = self.get_navigator_mut().get_next_position();
 			let direction = next_pos - self_pos;
-			if rand::random::<f32>() > 0.90 {
-				tracing::debug!("current {:?} walk to {:?}, through {:?}", self_pos, next_pos, direction);
-			}
 			if direction.length() > 0.0 {
 				let speed = self.speed;
-				self.state.action = Action::Walk;
+				let mut animation_tree = self.base().get_node_as::<AnimationTree>("AnimationTree");
+				animation_tree.set("parameters/walk/blend_position".into(), direction.x.to_variant());
+				animation_tree.set("parameters/idle/blend_position".into(), direction.x.to_variant());
+				animation_tree.set("parameters/attack/blend_position".into(), direction.to_variant());
+
 				self.transition_to_walk();
 				self.base_mut().set_velocity(direction.normalized() * speed);
 				self.base_mut().move_and_slide();
 			} else {
-				self.state.action = Action::Idle;
 				self.transition_to_idle();
 				self.base_mut().set_velocity(Vector2::ZERO);
 			}
 		} else {
-			self.state.action = Action::Idle;
 			self.transition_to_idle();
 			self.base_mut().set_velocity(Vector2::ZERO);
 		}
@@ -223,7 +220,7 @@ trait InputAction {
 
 impl InputAction for Goblin {
 	fn is_accept_input(&self) -> bool {
-		match self.state.action {
+		match self.action {
 			Action::Attack => false,
 			Action::Die => false,
 			_ => true
@@ -233,7 +230,6 @@ impl InputAction for Goblin {
 	fn attack_pressed(&mut self) {
 		if self.state.attack_cool_down.ready() {
 			self.state.attack_cool_down.reset();
-			self.state.action = Action::Attack;
 			self.attack();
 		}
 	}
@@ -265,10 +261,8 @@ impl InputAction for Goblin {
 
 			if velocity.length() > 0.0 {
 				velocity = velocity.normalized() * self.speed;
-				self.state.action = Action::Walk;
 				self.transition_to_walk();
 			} else {
-				self.state.action = Action::Idle;
 				self.transition_to_idle();
 			}
 

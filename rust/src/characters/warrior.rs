@@ -20,7 +20,7 @@ pub struct Warrior {
 	#[var]
 	speed: real,
 	state: State,
-	animated_sprite2d: OnceCell<Gd<AnimatedSprite2D>>,
+	// animated_sprite2d: OnceCell<Gd<AnimatedSprite2D>>,
 	base: Base<CharacterBody2D>,
 }
 
@@ -29,109 +29,6 @@ pub struct Warrior {
 impl Warrior {
 	#[func]
 	fn on_animation_finished(&mut self) {
-		match self.state.action {
-			Action::Attack => self.transition_to_idle(),
-			Action::Die => {}
-			_ => {}
-		}
-	}
-
-	fn get_animated_sprite2d(&self) -> &Gd<AnimatedSprite2D> {
-		self.animated_sprite2d.get().expect("AnimatedSprite2D is not initialized")
-	}
-
-	fn get_animated_sprite2d_mut(&mut self) -> &mut Gd<AnimatedSprite2D> {
-		self.animated_sprite2d.get_mut().expect("AnimatedSprite2D is not initialized")
-	}
-
-	fn transition_to_idle(&mut self) {
-		self.state.action = Action::Idle;
-		match self.state.face_direction {
-			FaceDirection::Left => self.left_idle(),
-			FaceDirection::Right => self.right_idle(),
-		}
-	}
-
-	fn transition_to_walk(&mut self) {
-		self.state.action = Action::Walk;
-		match self.state.face_direction {
-			FaceDirection::Left => self.left_walk(),
-			FaceDirection::Right => self.right_walk(),
-		}
-	}
-
-	fn right_idle(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_h(false);
-		self.get_animated_sprite2d_mut()
-			.play_ex()
-			.name("right_idle".into())
-			.done();
-	}
-
-	fn left_idle(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_h(true);
-		self.get_animated_sprite2d_mut()
-			.play_ex()
-			.name("right_idle".into())
-			.done();
-	}
-
-	fn right_walk(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_h(false);
-		self.get_animated_sprite2d_mut()
-			.play_ex()
-			.name("right_walk".into())
-			.done();
-	}
-
-	fn left_walk(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_h(true);
-		self.get_animated_sprite2d_mut()
-			.play_ex()
-			.name("right_walk".into())
-			.done();
-	}
-
-	fn right_attack(&mut self) {
-		let anime_seq = rand::thread_rng().gen_range(1..=2);
-		self.get_animated_sprite2d_mut()
-			.set_flip_h(false);
-		self.get_animated_sprite2d_mut()
-			.play_ex()
-			.name(format!("right_attack_{}", anime_seq).into())
-			.done();
-	}
-
-	fn left_attack(&mut self) {
-		let anime_seq = rand::thread_rng().gen_range(1..=2);
-		self.get_animated_sprite2d_mut()
-			.set_flip_h(true);
-		self.get_animated_sprite2d_mut()
-			.play_ex()
-			.name(format!("right_attack_{}", anime_seq).into())
-			.done();
-	}
-
-	fn up_attack(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_v(false);
-		self.get_animated_sprite2d_mut()
-			.play_ex()
-			.name("up_attack".into())
-			.done();
-	}
-
-	fn down_attack(&mut self) {
-		self.get_animated_sprite2d_mut()
-			.set_flip_v(true);
-		self.get_animated_sprite2d_mut()
-			.play_ex()
-			.name("down_attack".into())
-			.done();
 	}
 }
 
@@ -147,7 +44,6 @@ impl ICharacterBody2D for Warrior {
 				face_direction: FaceDirection::Right,
 				attack_cool_down: AttackCoolDown::new(1.0),
 			},
-			animated_sprite2d: OnceCell::new(),
 			base,
 		}
 	}
@@ -156,7 +52,6 @@ impl ICharacterBody2D for Warrior {
 		let mut anime = self.base_mut()
 			.get_node_as::<AnimatedSprite2D>("AnimatedSprite2D");
 		anime.play();
-		self.animated_sprite2d.set(anime).expect("AnimatedSprite2D is already initialized");
 	}
 
 	fn process(&mut self, delta: f64) {
@@ -187,10 +82,6 @@ impl InputAction for Warrior {
 		if self.state.attack_cool_down.ready() {
 			self.state.attack_cool_down.reset();
 			self.state.action = Action::Attack;
-			match self.state.face_direction {
-				FaceDirection::Left => self.left_attack(),
-				FaceDirection::Right => self.right_attack(),
-			}
 		}
 	}
 
@@ -222,10 +113,8 @@ impl InputAction for Warrior {
 			if velocity.length() > 0.0 {
 				velocity = velocity.normalized() * self.speed;
 				self.state.action = Action::Walk;
-				self.transition_to_walk();
 			} else {
 				self.state.action = Action::Idle;
-				self.transition_to_idle();
 			}
 
 			self.base_mut().set_velocity(velocity);
