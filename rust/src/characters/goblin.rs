@@ -1,9 +1,9 @@
 use std::cell::OnceCell;
 
-use godot::engine::{AnimationPlayer, Area2D, CharacterBody2D, ICharacterBody2D, Label, NavigationAgent2D, NavigationServer2D, Sprite2D};
+use godot::engine::{AnimationTree, Area2D, CharacterBody2D, CollisionShape2D, ICharacterBody2D, Label, NavigationAgent2D, NavigationServer2D, Sprite2D};
 use godot::prelude::*;
 
-use crate::characters::common::{Action, AttackCoolDown};
+use crate::characters::common::{Action, AttackCoolDown, FaceDirection};
 use crate::dnd::enums::WeaponType;
 use crate::interactable::effect::{Effect, Effects};
 use crate::interactable::effect::Damage;
@@ -45,10 +45,14 @@ pub struct Goblin {
 	gravity: real,
 	#[var]
 	speed: real,
+	#[export]
+	action: Action,
+	#[export]
+	face_direction_name: GString,
 	state: State,
-	animation_player: OnceCell<Gd<AnimationPlayer>>,
 	navigator: OnceCell<Navigator>,
     weapon: Torch,
+	hit_center_point: Vector2,
 	base: Base<CharacterBody2D>,
 }
 
@@ -89,12 +93,8 @@ impl Goblin {
 		}
 	}
 
-	fn get_animation_player(&self) -> &Gd<AnimationPlayer> {
-		self.animation_player.get().expect("AnimatedSprite2D is not initialized")
-	}
-
-	fn get_animation_player_mut(&mut self) -> &mut Gd<AnimationPlayer> {
-		self.animation_player.get_mut().expect("AnimatedSprite2D is not initialized")
+	fn get_animation_tree(&self) -> Gd<AnimationTree> {
+		self.base().get_node_as::<AnimationTree>("AnimationTree")
 	}
 
 	fn get_navigator(&self) -> &Navigator {
@@ -106,62 +106,31 @@ impl Goblin {
 	}
 
 	fn turn_left(&mut self) {
-		self.base_mut()
-			.get_node_as::<Sprite2D>("Sprite2D")
-			.set_scale(Vector2::new(-1.0, 1.0));
+		self.face_direction_name = FaceDirection::Left.to_string().into();
 	}
 
 	fn turn_right(&mut self) {
-		self.base_mut()
-			.get_node_as::<Sprite2D>("Sprite2D")
-			.set_scale(Vector2::new(1.0, 1.0));
+		self.face_direction_name = FaceDirection::Right.to_string().into();
 	}
 
 	fn transition_to_idle(&mut self) {
 		self.state.action = Action::Idle;
-		self.idle();
 	}
 
 	fn transition_to_walk(&mut self) {
 		self.state.action = Action::Walk;
-		self.walk();
-	}
-
-	fn idle(&mut self) {
-		self.get_animation_player_mut()
-			.play_ex()
-			.name("idle".into())
-			.done();
-	}
-
-	fn walk(&mut self) {
-		self.get_animation_player_mut()
-			.play_ex()
-			.name("walk".into())
-			.done();
 	}
 
 	fn attack(&mut self) {
-		self.get_animation_player_mut()
-			.animation_set_next("attack".into(), "idle".into());
-		self.get_animation_player_mut()//.play();
-			.play_ex()
-			.name("attack".into())
-			.done();
+		self.action = Action::Attack;
 	}
 
 	fn up_attack(&mut self) {
-		self.get_animation_player_mut()
-			.play_ex()
-			.name("up_attack".into())
-			.done();
+		self.action = Action::Attack;
 	}
 
 	fn down_attack(&mut self) {
-		self.get_animation_player_mut()
-			.play_ex()
-			.name("down_attack".into())
-			.done();
+		self.action = Action::Attack;
 	}
 }
 
@@ -171,25 +140,22 @@ impl ICharacterBody2D for Goblin {
 		Goblin {
 			gravity: 100 as real,
 			speed: 100 as real,
+			action: Action::Idle,
+			face_direction_name: FaceDirection::Right.to_string().into(),
 			state: State {
 				hp: 100,
 				action: Action::Idle,
 				attack_cool_down: AttackCoolDown::new(1.0),
 			},
             weapon: Torch {},
-			animation_player: OnceCell::new(),
 			navigator: OnceCell::new(),
+			hit_center_point: Vector2::ZERO,
 			base,
 		}
 	}
 
 	fn ready(&mut self) {
 		self.base().get_world_2d();
-		let mut anime = self.base_mut()
-			.get_node_as::<AnimationPlayer>("AnimationPlayer");
-		anime.play_ex().name("idle".into()).done();
-		self.animation_player.set(anime)
-			.expect("AnimationPlayer is already initialized");
 		let navigation_agent = self.base_mut()
 			.get_node_as::<NavigationAgent2D>("NavigationAgent2D");
 		self.navigator.set(Navigator::new(navigation_agent))

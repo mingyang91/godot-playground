@@ -1,0 +1,50 @@
+[gd_scene load_steps=7 format=3 uid="uid://duty6s1j2eosh"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_5f8k6"]
+size = Vector2(5, 65)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_xhoef"]
+size = Vector2(200, 5)
+
+[sub_resource type="ImageTexture" id="ImageTexture_4igbp"]
+
+[sub_resource type="ArrayMesh" id="ArrayMesh_f6uni"]
+
+[sub_resource type="MeshTexture" id="MeshTexture_r4hut"]
+mesh = SubResource("ArrayMesh_f6uni")
+base_texture = SubResource("ImageTexture_4igbp")
+image_size = Vector2(10, 10)
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_ygl0f"]
+radius = 2.0
+
+[node name="LotteryMachine" type="Node2D"]
+
+[node name="Shorter" type="Node2D" parent="."]
+
+[node name="StaticBody2D" type="StaticBody2D" parent="."]
+
+[node name="Right" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(102, 0)
+shape = SubResource("RectangleShape2D_5f8k6")
+
+[node name="Left" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(-102, 0)
+shape = SubResource("RectangleShape2D_5f8k6")
+
+[node name="Bottom" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(0, 30)
+shape = SubResource("RectangleShape2D_xhoef")
+
+[node name="Top" type="CollisionShape2D" parent="StaticBody2D"]
+position = Vector2(0, -30)
+shape = SubResource("RectangleShape2D_xhoef")
+
+[node name="Ball" type="Sprite2D" parent="."]
+texture = SubResource("MeshTexture_r4hut")
+
+[node name="RigidBody2D" type="RigidBody2D" parent="Ball"]
+linear_velocity = Vector2(2.08165e-12, 50)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Ball/RigidBody2D"]
+shape = SubResource("CircleShape2D_ygl0f")
