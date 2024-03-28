@@ -1,14 +1,11 @@
-use std::cell::OnceCell;
-use godot::engine::{AnimatedSprite2D, CharacterBody2D, ICharacterBody2D, Label};
+use godot::engine::{AnimationNodeStateMachinePlayback, AnimationTree, CharacterBody2D, ICharacterBody2D, Label};
 use godot::prelude::*;
-use rand::Rng;
-use crate::characters::common::{Action, AttackCoolDown, FaceDirection};
+
+use crate::characters::common::{Action, AttackCoolDown};
 
 #[derive(Debug)]
 struct State {
 	hp: i32,
-	action: Action,
-	face_direction: FaceDirection,
 	attack_cool_down: AttackCoolDown,
 }
 
@@ -18,9 +15,10 @@ pub struct Warrior {
 	#[var]
 	gravity: real,
 	#[var]
+	#[export]
+	action: Action,
 	speed: real,
 	state: State,
-	// animated_sprite2d: OnceCell<Gd<AnimatedSprite2D>>,
 	base: Base<CharacterBody2D>,
 }
 
@@ -28,7 +26,19 @@ pub struct Warrior {
 #[godot_api]
 impl Warrior {
 	#[func]
-	fn on_animation_finished(&mut self) {
+	fn on_animation_finished(&mut self, name: GString) {
+		if name == Action::Attack.to_godot() {
+			self.action = Action::Idle
+		}
+	}
+
+	fn set_direction(&mut self, dir: Vector2) {
+		let mut animation_tree = self.base().get_node_as::<AnimationTree>("AnimationTree");
+		animation_tree.set("parameters/Attack/blend_position".into(), dir.to_variant());
+		if dir.length() > 0.0 {
+			animation_tree.set("parameters/Idle/blend_position".into(), dir.to_variant());
+			animation_tree.set("parameters/Walk/blend_position".into(), dir.to_variant());
+		}
 	}
 }
 
@@ -38,21 +48,16 @@ impl ICharacterBody2D for Warrior {
 		Warrior {
 			gravity: 100 as real,
 			speed: 100 as real,
+			action: Action::Idle,
 			state: State {
 				hp: 100,
-				action: Action::Idle,
-				face_direction: FaceDirection::Right,
 				attack_cool_down: AttackCoolDown::new(1.0),
 			},
 			base,
 		}
 	}
 
-	fn ready(&mut self) {
-		let mut anime = self.base_mut()
-			.get_node_as::<AnimatedSprite2D>("AnimatedSprite2D");
-		anime.play();
-	}
+	fn ready(&mut self) {}
 
 	fn process(&mut self, delta: f64) {
 		self.state.attack_cool_down.update(delta);
@@ -71,9 +76,9 @@ trait InputAction {
 
 impl InputAction for Warrior {
 	fn is_accept_input(&self) -> bool {
-		match self.state.action {
+		match self.action {
 			Action::Attack => false,
-			Action::Die => false,
+			Action::Dead => false,
 			_ => true
 		}
 	}
@@ -81,7 +86,9 @@ impl InputAction for Warrior {
 	fn attack_pressed(&mut self) {
 		if self.state.attack_cool_down.ready() {
 			self.state.attack_cool_down.reset();
-			self.state.action = Action::Attack;
+			let mut animation_tree = self.base().get_node_as::<AnimationTree>("AnimationTree");
+			let mut state_machine: Gd<AnimationNodeStateMachinePlayback> = animation_tree.get("parameters/playback".into()).to();
+			state_machine.travel(Action::Attack.to_godot().into());
 		}
 	}
 
@@ -96,11 +103,9 @@ impl InputAction for Warrior {
 		} else {
 			let mut velocity = Vector2::ZERO;
 			if input.is_action_pressed("move_right".into()) {
-				self.state.face_direction = FaceDirection::Right;
 				velocity += Vector2::RIGHT;
 			}
 			if input.is_action_pressed("move_left".into()) {
-				self.state.face_direction = FaceDirection::Left;
 				velocity += Vector2::LEFT;
 			}
 			if input.is_action_pressed("move_down".into()) {
@@ -112,12 +117,13 @@ impl InputAction for Warrior {
 
 			if velocity.length() > 0.0 {
 				velocity = velocity.normalized() * self.speed;
-				self.state.action = Action::Walk;
+				self.action = Action::Walk;
 			} else {
-				self.state.action = Action::Idle;
+				self.action = Action::Idle;
 			}
 
 			self.base_mut().set_velocity(velocity);
+			self.set_direction(velocity);
 			self.base_mut().move_and_slide();
 		}
 	}

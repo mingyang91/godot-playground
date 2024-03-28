@@ -1,4 +1,5 @@
 use std::fmt::Display;
+use contracts::{debug_invariant, invariant};
 use godot::engine::global::PropertyHint;
 use godot::prelude::*;
 use godot::register::property::PropertyHintInfo;
@@ -24,7 +25,7 @@ pub enum Action {
 	Idle,
 	Walk,
 	Attack,
-	Die,
+	Dead,
 }
 
 impl Var for Action {
@@ -57,7 +58,7 @@ impl Display for Action {
 			Action::Idle => write!(f, "idle"),
 			Action::Walk => write!(f, "walk"),
 			Action::Attack => write!(f, "attack"),
-			Action::Die => write!(f, "die"),
+			Action::Dead => write!(f, "die"),
 		}
 	}
 }
@@ -67,7 +68,8 @@ pub struct AttackCoolDown {
 	time: f64,
 	elapsed: f64,
 }
-
+#[debug_invariant(self.time >= 0.0)]
+#[debug_invariant(self.elapsed >= 0.0)]
 impl AttackCoolDown {
 	pub fn new(time: f64) -> Self {
 		AttackCoolDown {

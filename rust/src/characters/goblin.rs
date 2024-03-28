@@ -222,7 +222,7 @@ impl InputAction for Goblin {
 	fn is_accept_input(&self) -> bool {
 		match self.action {
 			Action::Attack => false,
-			Action::Die => false,
+			Action::Dead => false,
 			_ => true
 		}
 	}
